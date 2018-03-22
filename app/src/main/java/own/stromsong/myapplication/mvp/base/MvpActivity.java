@@ -16,6 +16,7 @@ public abstract class MvpActivity<P extends BasePresenter> extends BaseSupportAc
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mvpPresenter = createPresenter();
+        initData();
     }
 
     /**
@@ -24,6 +25,8 @@ public abstract class MvpActivity<P extends BasePresenter> extends BaseSupportAc
      * @return
      */
     protected abstract P createPresenter();
+
+    protected abstract void initData();
 
     @Override
     protected void onDestroy() {

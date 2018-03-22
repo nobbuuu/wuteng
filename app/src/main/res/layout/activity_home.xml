@@ -18,14 +18,19 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_marginLeft="40dp"
+                android:layout_marginTop="72px"
                 android:layout_height="wrap_content">
+
                 <TextView
-                    android:layout_width="wrap_content"
                     android:id="@+id/weather_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
                     android:text="27°"
-                    android:textSize="120px"
                     android:textColor="@color/color_ffffff"
-                    android:layout_height="wrap_content" />
+                    android:textSize="120px" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:text="多云转晴"
@@ -61,7 +66,7 @@
                     android:layout_centerInParent="true"
                     android:background="@mipmap/ic_launcher"
                     android:layout_marginLeft="10dp"
-                    android:layout_height="135px" />
+                    android:layout_height="155px" />
             </RelativeLayout>
         </LinearLayout>
         <LinearLayout
@@ -118,7 +123,7 @@
                         android:layout_width="123px"
                         android:layout_height="122px"
                         android:layout_marginLeft="50px"
-                        android:background="@drawable/icon_program" />
+                        android:background="@drawable/icon_ahoutus" />
 
                     <TextView
                         android:layout_width="wrap_content"

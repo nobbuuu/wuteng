@@ -3,11 +3,13 @@ package own.stromsong.myapplication.mvp.base;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -16,6 +18,8 @@ import com.blankj.utilcode.util.BarUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.weavey.loading.lib.LoadingLayout;
+import com.yanzhenjie.permission.AndPermission;
+import com.youth.xframe.utils.statusbar.XStatusBar;
 import com.youth.xframe.widget.XLoadingDialog;
 
 import butterknife.BindView;
@@ -52,15 +56,22 @@ public abstract class BaseSupportActivity extends AppCompatActivity {
     @BindView(R.id.real_ll)
     LinearLayout mRealLl;
     private Unbinder bind;
-    private LinearLayout mRootLl;
+    private FrameLayout mRootLl;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        XStatusBar.setColor(this, Color.parseColor("#0066CC"), 1);
         super.onCreate(savedInstanceState);
         mHelper = SharedPreferencesHelper.getInstance(MyApplication.getInstance());
         View baseView = LayoutInflater.from(this).inflate(R.layout.base_activity, null);
+        baseView.findViewById(R.id.leftText).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();//返回键
+            }
+        });
         mRootLl = baseView.findViewById(R.id.root_ll);
         if (getLayoutId() > 0) {
             mRootLl.removeAllViews();
@@ -69,12 +80,18 @@ public abstract class BaseSupportActivity extends AppCompatActivity {
         setContentView(baseView);
         bind = ButterKnife.bind(this);
         setRefresh();
-        initData();
+        initLocalData();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // 只需要调用这一句，剩下的AndPermission自动完成。
+        AndPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
     protected abstract int getLayoutId();
 
-    protected abstract void initData();
+    protected void initLocalData(){}
 
     /**
      * 默认不刷新
@@ -104,13 +121,8 @@ public abstract class BaseSupportActivity extends AppCompatActivity {
         mBaselayoutRl.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    @OnClick(R.id.leftText)
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.leftText:
-                finish();
-                break;
-        }
+    protected LoadingLayout getLoadLayout() {
+        return mLoadLayout;
     }
 
     public void showLoading1() {

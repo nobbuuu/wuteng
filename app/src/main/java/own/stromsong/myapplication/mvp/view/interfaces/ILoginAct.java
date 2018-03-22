@@ -7,5 +7,5 @@ import own.stromsong.myapplication.mvp.base.BaseView;
  */
 
 public interface ILoginAct extends BaseView {
-    void isSuccess(boolean success);
+    void isSuccess();
 }

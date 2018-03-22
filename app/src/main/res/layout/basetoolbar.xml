@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:id="@+id/baselayout_rl"
-    android:layout_height="?attr/actionBarSize"
+    android:layout_height="128px"
     android:background="@color/color_0066cc">
     <TextView
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="50dp"
+        android:layout_height="45dp"
         android:id="@+id/leftText"
         android:maxLength="10"
         android:background="@mipmap/icon_back"

@@ -5,6 +5,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
+import com.weavey.loading.lib.LoadingLayout;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -43,13 +44,38 @@ public class MainActivity extends MvpActivity<LoginPresenter> implements ILoginA
             case R.id.login:
                 String id = mEtId.getText().toString().trim();
                 String password = mEtPw.getText().toString().trim();
-                mvpPresenter.login(id,password);
+                mvpPresenter.login(id, password);
                 break;
         }
     }
 
     @Override
-    public void isSuccess(boolean success) {
-        if (success) ActivityUtils.startActivity(HomeActivity.class);
+    public void isSuccess() {
+        ActivityUtils.startActivity(HomeActivity.class);
+    }
+
+    @Override
+    public void showLoading() {
+        showLoading1();
+    }
+
+    @Override
+    public void showContent() {
+        goneLoading1();
+    }
+
+    @Override
+    public void showEmpty() {
+        goneLoading1();
+    }
+
+    @Override
+    public void showError() {
+        goneLoading1();
+    }
+
+    @Override
+    public void showNoNetwork() {
+        goneLoading1();
     }
 }

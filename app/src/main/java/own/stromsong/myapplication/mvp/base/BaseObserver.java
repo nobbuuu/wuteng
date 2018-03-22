@@ -10,6 +10,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import own.stromsong.myapplication.app.MyApplication;
+import own.stromsong.myapplication.mvp.view.activity.MainActivity;
 import own.stromsong.myapplication.utils.sharepreference.SharedPreferencesHelper;
 import own.stromsong.myapplication.utils.sharepreference.SharedPreferencesTag;
 
@@ -22,6 +23,7 @@ public abstract class BaseObserver<T> implements Observer<HttpResponse<T>> {
     private Context mContext;
     private BaseView mBaseView;
     private Disposable mDisposable;
+
     /**
      * @param context
      * @param baseView 传入view对象
@@ -55,15 +57,19 @@ public abstract class BaseObserver<T> implements Observer<HttpResponse<T>> {
 
     @Override
     public void onError(Throwable e) {
-        LogUtils.d("sst_", "error:" + e.toString());
+        LogUtils.d("ad_", "error:" + e.toString());
 
         mBaseView.showError();
+        if (e.getMessage() == null) {
+            ToastUtils.showShort(e + "");
+            return;
+        }
         ToastUtils.showShort(e.getMessage() + "");
     }
 
     @Override
     public void onComplete() {
-        LogUtils.d("sst_", "onComplete");
+        LogUtils.d("ad_", "onComplete");
     }
 
     public abstract void onResponseCodeSuccess(T t);
@@ -81,8 +87,8 @@ public abstract class BaseObserver<T> implements Observer<HttpResponse<T>> {
         //根据统一返回码继续做相应处理
         mBaseView.showError();
         switch (code) {
-            case "-10107"://token失效
-//                ActivityUtils.finishToActivity(LoginActivity.class, false);
+            case "0001"://token失效
+                ActivityUtils.finishToActivity(MainActivity.class, false);
                 helper.putBooleanValue(SharedPreferencesTag.LOGIN_BOOLEAN, false);
                 break;
         }

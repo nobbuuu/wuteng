@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".app.MyApplication"
@@ -20,9 +21,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".mvp.view.activity.HomeActivity"></activity>
+        <activity android:name=".mvp.view.activity.HomeActivity" />
         <activity android:name=".mvp.view.activity.AboutActivity" />
-        <activity android:name=".mvp.view.activity.ActActivity"></activity>
+        <activity android:name=".mvp.view.activity.ActActivity" />
+        <activity
+            android:name=".mvp.view.activity.VideoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="landscape" />
+        <activity android:name=".mvp.view.activity.Video2Activity" android:launchMode="singleTask"></activity>
     </application>
 
 </manifest>

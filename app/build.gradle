@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "own.stromsong.myapplication"
-        minSdkVersion 15
+        minSdkVersion 17
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -26,6 +26,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation 'com.android.support:design:27.1.0'
     //    快速开发框架
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.youth.xframe:xframe:1.0.2'
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
@@ -55,4 +56,5 @@ dependencies {
     compile 'com.blankj:utilcode:1.10.0'
     //    动态权限
     compile 'com.yanzhenjie:permission:1.0.3'
+    implementation project(':YCVideoPlayerLib')
 }
