@@ -44,23 +44,20 @@ import own.stromsong.myapplication.mvp.model.MenuBean;
 
 public class Video2Activity extends BaseSupportActivity {
 
-    //    String url = "http://183.60.197.29/15/t/j/i/s/tjissokyfzdxotupwpwxjjoufsbshi/he.yinyuetai.com/09040162194A2B01EE029439394C3FBB.mp4?sc\\u003d0d6ab169ff59aea7\\u0026br\\u003d3173\\u0026vid\\u003d2780294\\u0026aid\\u003d6762\\u0026area\\u003dML\\u0026vst\\u003d0";
+    //        String url = "http://183.60.197.29/15/t/j/i/s/tjissokyfzdxotupwpwxjjoufsbshi/he.yinyuetai.com/09040162194A2B01EE029439394C3FBB.mp4?sc\\u003d0d6ab169ff59aea7\\u0026br\\u003d3173\\u0026vid\\u003d2780294\\u0026aid\\u003d6762\\u0026area\\u003dML\\u0026vst\\u003d0";
     String url = "http://120.24.234.123:8080/sysfile/upload/201711/64aa5b11-60df-4cae-8989-6ec194214eff.mp4";
     @BindView(R.id.root_rl)
     RelativeLayout mRootRl;
 
-    private List<MenuBean.ListResultBean.ListshowBean.Material> list;
-    private IntentFilter intentFilter;
+    private List<MenuBean.ListResultBean> list;
     private MediaPlayer mediaPlayer;
-
-    private TimeChangeReceiver timeChangeReceiver;
 
     @Override
     protected int getLayoutId() {
         return R.layout.activity_video2;
     }
 
-    public static void startVideo2Activity(Context context, List<MenuBean.ListResultBean.ListshowBean.Material> list) {
+    public static void startVideo2Activity(Context context, List<MenuBean.ListResultBean> list) {
         Intent intent = new Intent(context, Video2Activity.class);
         intent.putExtra("list", (Serializable) list);
         context.startActivity(intent);
@@ -69,66 +66,112 @@ public class Video2Activity extends BaseSupportActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-//        mRootRl.removeAllViews();
-//        mRootRl.setBackground(null);
-//        mRootRl.addView(getVideoPlayer(mStringList, 800, 600, 100, 50, 0));
-//        mRootRl.addView(getVideoPlayer(mStringList, 800, 600, 1000, 50, 1));
-//        playSound("");
-//        mRootRl.postInvalidate();
+
+        mRootRl.removeAllViews();
+        showsList.clear();
+        list = (List<MenuBean.ListResultBean>) intent.getSerializableExtra("list");//节目单集合
+        for (int i = 0; i < list.size(); i++) {
+            showsList.addAll(list.get(i).getListshow());//节目集合
+        }
+        setData();
+        mRootRl.postInvalidate();
     }
+
+    private List<MenuBean.ListResultBean.ListshowBean> showsList = new ArrayList<>();//节目集合
 
     @Override
     protected void initLocalData() {
         super.initLocalData();
         setBarVisible(false);
-        list = (List<MenuBean.ListResultBean.ListshowBean.Material>) getIntent().getSerializableExtra("list");
-        if (list != null && list.size() != 0) {
-            mRootRl.addView(getImage("http://img05.tooopen.com/images/20150820/tooopen_sy_139205349641.jpg", 350, 200, 200, 150));
-            mRootRl.addView(getVideoPlayer(url, 400, 350, 1150, 250, (float) 0));
-            mRootRl.addView(getWebView("http://www.27270.com/zt/nvsheng/", 500, 500, 180, 420));
-            playSound(this,"http://120.24.234.123:8080/sysfile/upload/201711/e06f6f90-6379-422b-ae71-33297e4e0687.mp3",(float)0.5);
-            mRootRl.addView(getText("这是字幕这是字幕", 1400, 900));
-            for (int i = 0; i < list.size(); i++) {
+        list = (List<MenuBean.ListResultBean>) getIntent().getSerializableExtra("list");//节目单集合
+
+        for (int i = 0; i < list.size(); i++) {
+            showsList.addAll(list.get(i).getListshow());//节目集合
+        }
+        setData();//开始播放节目
+    }
+
+    private void setData() {
+        MenuBean.ListResultBean.ListshowBean bean = null;
+        try {
+            bean = showsList.get(0);//播放第一条,如果没节目会走异常
+            playShow(bean.getListMaterial());
+        } catch (Exception e) {
+            showToastMsgShort("没有新节目了");//没有节目 上个节目会重复播放
+        } finally {
+            if (bean != null) {
+                mHandler.sendEmptyMessageDelayed(1, bean.getShows().getPlayTime() * 60 * 1000);
+                showsList.remove(bean);
+            }
+        }
+    }
+
+    private android.os.Handler mHandler = new android.os.Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            setData();
+        }
+    };
+
+    /**
+     * 播放节目
+     *
+     * @param materialList
+     */
+    private void playShow(List<MenuBean.ListResultBean.ListshowBean.Material> materialList) {
+        if (materialList != null && materialList.size() != 0) {
+//            mRootRl.addView(getImage("http://img05.tooopen.com/images/20150820/tooopen_sy_139205349641.jpg", 350, 200, 200, 150));
+//            mRootRl.addView(getVideoPlayer(url, 400, 350, 1150, 250, (float) 0));
+//            mRootRl.addView(getWebView("http://www.27270.com/zt/nvsheng/", 500, 500, 180, 420));
+//            playSound(this,"http://120.24.234.123:8080/sysfile/upload/201711/e06f6f90-6379-422b-ae71-33297e4e0687.mp3",(float)0.1);
+//            mRootRl.addView(getText("这是字幕这是字幕", 1400, 900));
+//            Glide.with(this).load("http://pic35.nipic.com/20131115/6704106_153707247000_2.jpg").into(new ViewTarget<RelativeLayout, GlideDrawable>(mRootRl) {
+//                                @Override
+//                                public void onResourceReady(GlideDrawable resource, GlideAnimation anim) {
+//                                    mRootRl.setBackground(resource);
+//                                }
+//                            });
+            for (int i = 0; i < materialList.size(); i++) {
                 //1.图片 2.音频 3.网络视频 4.本地视频 5.HTML 6.PPT 7.Word 8.Excel 9.PDF 10.背景
-                MenuBean.ListResultBean.ListshowBean.Material.ShowsMaterialBean showsMaterialBean = list.get(i).getShowsMaterial();
-                MenuBean.ListResultBean.ListshowBean.Material.MaterialBean materialBean = list.get(i).getMaterial();
-                if (materialBean != null || showsMaterialBean != null) {
+                MenuBean.ListResultBean.ListshowBean.Material.ShowsMaterialBean showsMaterialBean = materialList.get(i).getShowsMaterial();
+                MenuBean.ListResultBean.ListshowBean.Material.MaterialBean materialBean = materialList.get(i).getMaterial();
+                if (materialBean != null && showsMaterialBean != null) {
                     int wide = showsMaterialBean.getWide();
                     int hige = showsMaterialBean.getHige();
                     int x = Integer.valueOf(showsMaterialBean.getX());
                     int y = Integer.valueOf(showsMaterialBean.getY());
-                    int type = 10;
+                    String url = materialBean.getFile();
+                    int type = materialBean.getType();
                     switch (type) {
                         case 1:
                             mRootRl.addView(getImage(url, wide, hige, x, y));
                             break;
                         case 2:
+                            playSound(this, "http://www.realelaw.cn:8080/sysfile/upload/789.mp3", (float) 0.2);
+                            break;
                         case 3:
                         case 4:
-                            mRootRl.addView(getVideoPlayer(url, wide, hige, x, y, (float) 0.5));
+                            mRootRl.addView(getVideoPlayer(url, wide, hige, x, y, (float) 0));
                             break;
                         case 5:
-                            mRootRl.addView(getWebView("http://www.baidu.com", wide, hige, x, y));
+                            mRootRl.addView(getWebView(url, wide, hige, x, y));
                             break;
                         case 10:
-                            Glide.with(this).load("http://pic35.nipic.com/20131115/6704106_153707247000_2.jpg").into(new ViewTarget<RelativeLayout, GlideDrawable>(mRootRl) {
+                            Glide.with(this).load(url).into(new ViewTarget<RelativeLayout, GlideDrawable>(mRootRl) {
                                 @Override
                                 public void onResourceReady(GlideDrawable resource, GlideAnimation anim) {
                                     mRootRl.setBackground(resource);
                                 }
                             });
                             break;
+                        case 11:
+                            mRootRl.addView(getText("#ff0000",40,"这是字幕这是字幕", 1400, 900));
+                            break;
                     }
                 }
             }
         }
-
-        intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_TIME_TICK);//每分钟变化
-
-        timeChangeReceiver = new TimeChangeReceiver();
-        registerReceiver(timeChangeReceiver, intentFilter);
-
     }
 
     @Override
@@ -167,7 +210,6 @@ public class Video2Activity extends BaseSupportActivity {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
-        unregisterReceiver(timeChangeReceiver);
     }
 
     private void stopPlaybackVideo() {
@@ -215,6 +257,13 @@ public class Video2Activity extends BaseSupportActivity {
                 mp.start();
             }
         });
+        mVideoPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                showToastMsgShort("无法播放该视频");
+                return true;
+            }
+        });
         return mVideoPlayer;
     }
 
@@ -222,13 +271,13 @@ public class Video2Activity extends BaseSupportActivity {
     /**
      * 播放音频的方法
      */
-    private void playSound(Context context,String path,final float volume) {
+    private void playSound(Context context, String path, final float volume) {
         mediaPlayer = new MediaPlayer();
         try {
             //播放之前要先把音频文件重置
             mediaPlayer.reset();
             //调用方法传进去要播放的音频路径
-            mediaPlayer.setDataSource(context,Uri.parse(path));
+            mediaPlayer.setDataSource(context, Uri.parse(path));
             //异步准备音频资源
             mediaPlayer.prepareAsync();
             //调用mediaPlayer的监听方法，音频准备完毕会响应此方法
@@ -324,28 +373,16 @@ public class Video2Activity extends BaseSupportActivity {
      * @param y
      * @return
      */
-    private TextView getText(String text, int x, int y) {
+    private TextView getText(String color,float textSize,String text, int x, int y) {
         TextView textView = new TextView(this);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.leftMargin = x;
         layoutParams.topMargin = y;
         textView.setLayoutParams(layoutParams);
         textView.setText(text);
-        textView.setTextColor(Color.RED);
-        textView.setTextSize(40);
+        textView.setTextColor(Color.parseColor(color));
+        textView.setTextSize(textSize);
         return textView;
     }
 
-    class TimeChangeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
-                case Intent.ACTION_TIME_TICK:
-                    //每过一分钟 触发
-                    Toast.makeText(context, "1 min passed", Toast.LENGTH_SHORT).show();
-//                    Video2Activity.startVideo2Activity(context);
-                    break;
-            }
-        }
-    }
 }

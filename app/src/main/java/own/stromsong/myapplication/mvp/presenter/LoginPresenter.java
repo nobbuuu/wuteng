@@ -25,7 +25,7 @@ public class LoginPresenter extends BasePresenter<ILoginAct> {
     /**
      * 登录
      */
-    public void login(String equId, String password) {
+    public void login(final String equId, String password) {
 
         BaseObserver<LoginBean> mObserver = new BaseObserver<LoginBean>(context, mvpView) {
             @Override
@@ -34,6 +34,7 @@ public class LoginPresenter extends BasePresenter<ILoginAct> {
                     mvpView.isSuccess();
                     mHelper.putBooleanValue(SharedPreferencesTag.LOGIN_BOOLEAN, true);
                     mHelper.putStringValue(SharedPreferencesTag.TOKEN, mLoginBean.getToken());
+                    mHelper.putStringValue(SharedPreferencesTag.ID,equId);
                 }
             }
         };

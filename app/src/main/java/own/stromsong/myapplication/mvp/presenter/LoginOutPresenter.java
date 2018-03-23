@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.blankj.utilcode.util.AppUtils;
+import com.tencent.android.tpush.XGPushManager;
 
 import own.stromsong.myapplication.mvp.base.BaseObserver;
 import own.stromsong.myapplication.mvp.base.BasePresenter;
@@ -30,6 +31,8 @@ public class LoginOutPresenter extends BasePresenter<ILogOutAndUpdata> {
             public void onResponseCodeSuccess(Result mResult) {
                 if (mResult != null && "退出登录".equalsIgnoreCase(mResult.getResult())) {
                     mvpView.isSuccess();
+                    mHelper.putBooleanValue(SharedPreferencesTag.LOGIN_BOOLEAN, false);
+                    XGPushManager.delAccount(context,mHelper.getStringValue(SharedPreferencesTag.ID));
                 } else {
                     mvpView.fail();
                 }

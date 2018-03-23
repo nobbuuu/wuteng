@@ -1,10 +1,13 @@
 package own.stromsong.myapplication.mvp.view.activity;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
+import com.tencent.android.tpush.XGIOperateCallback;
+import com.tencent.android.tpush.XGPushManager;
 import com.weavey.loading.lib.LoadingLayout;
 
 import butterknife.BindView;
@@ -51,6 +54,19 @@ public class MainActivity extends MvpActivity<LoginPresenter> implements ILoginA
 
     @Override
     public void isSuccess() {
+        XGPushManager.registerPush(this, mEtId.getText().toString().trim(),new XGIOperateCallback() {
+            @Override
+            public void onSuccess(Object data, int flag) {
+                //token在设备卸载重装的时候有可能会变
+                Log.d("TPush", "注册成功，设备token为：" + data);
+            }
+
+            @Override
+            public void onFail(Object data, int errCode, String msg) {
+                Log.d("TPush", "注册失败，错误码：" + errCode + ",错误信息：" + msg);
+            }
+        });
+
         ActivityUtils.startActivity(HomeActivity.class);
     }
 

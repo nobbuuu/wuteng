@@ -3,6 +3,7 @@ package own.stromsong.myapplication.app;
 import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import com.blankj.utilcode.util.Utils;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -13,6 +14,9 @@ import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
+import com.tencent.android.tpush.XGIOperateCallback;
+import com.tencent.android.tpush.XGPushConfig;
+import com.tencent.android.tpush.XGPushManager;
 import com.weavey.loading.lib.LoadingLayout;
 import com.youth.xframe.XFrame;
 
@@ -63,7 +67,7 @@ public class MyApplication extends Application {
                 .setTag("sst")//设置全局tag
                 .setShowThreadInfo(false)//是否开启线程信息显示，默认true
                 .setDebug(true);//是否显示日志，默认true，发布时最好关闭
-
+        XGPushConfig.enableDebug(this,true);
     }
     /**
      * 初始化状态布局

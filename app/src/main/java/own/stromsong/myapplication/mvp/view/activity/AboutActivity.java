@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
+import com.tencent.android.tpush.XGPushManager;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionNo;
 import com.yanzhenjie.permission.PermissionYes;
@@ -76,7 +77,6 @@ public class AboutActivity extends MvpActivity<LoginOutPresenter> implements ILo
     @Override
     public void isSuccess() {//退出登录成功
         ActivityUtils.finishToActivity(MainActivity.class, false);
-        mHelper.putBooleanValue(SharedPreferencesTag.LOGIN_BOOLEAN, false);
     }
 
     @Override

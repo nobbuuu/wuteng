@@ -12,4 +12,6 @@ public class SharedPreferencesTag {
 
     public static final String TOKEN = TAG + "token";
 
+    public static final String ID =TAG+"id";
+
 }

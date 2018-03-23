@@ -41,7 +41,6 @@ public class HomeActivity extends MvpActivity<HomePresenter> implements IHomeAct
     LinearLayout mActLl;
     @BindView(R.id.about_ll)
     LinearLayout mAboutLl;
-    private List<MenuBean.ListResultBean.ListshowBean.Material> list = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {
@@ -109,17 +108,6 @@ public class HomeActivity extends MvpActivity<HomePresenter> implements IHomeAct
 
     @Override
     public void getMenuList(List<MenuBean.ListResultBean> showMenu) {
-        list.clear();
-        if (showMenu != null) {
-            for (int i = 0; i < showMenu.size(); i++) {
-                List<MenuBean.ListResultBean.ListshowBean> menu = showMenu.get(i).getListshow();
-                if (menu != null) {
-                    for (int i1 = 0; i1 < menu.size(); i1++) {//节目
-                        list.addAll(menu.get(i1).getListMaterial());
-                    }
-                }
-            }
-        }
-        Video2Activity.startVideo2Activity(this, list);
+        Video2Activity.startVideo2Activity(this, showMenu);
     }
 }
