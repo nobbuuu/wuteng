@@ -10,6 +10,7 @@ import java.util.List;
 public class MenuBean implements Serializable{
 
     private List<ListResultBean> listResult;
+    private List<SubtitlesBean> subtitles;
 
     public List<ListResultBean> getListResult() {
         return listResult;
@@ -19,14 +20,200 @@ public class MenuBean implements Serializable{
         this.listResult = listResult;
     }
 
+    public List<SubtitlesBean> getSubtitles() {
+        return subtitles;
+    }
+
+    public static class SubtitlesBean implements Serializable{
+        /**
+         * id : 2146ab8c8e99435cb57828ba1360fac5
+         * isNewRecord : false
+         * createDate : 2018-01-25 17:15:18
+         * updateDate : 2018-01-25 17:50:43
+         * name : RSS
+         * location : 0
+         * fontSize : 30
+         * msgColor : #ff0000
+         * bgColor : #ff0000
+         * startDate : 2018-01-25 00:00:00
+         * endDate : 2018-01-31 00:00:00
+         * equipmentId : 1abad3de4e084064b9f5d6217cfa154f,7e562d9cca834a6e8711b6d50bc3b917
+         * rss : 12156165
+         * type : 3
+         * status : 0
+         */
+
+        private String id;
+        private boolean isNewRecord;
+        private String createDate;
+        private String updateDate;
+        private String name;
+        private int location;
+        private int fontSize;
+        private String msgColor;
+        private String bgColor;
+        private String msgContext;
+        private String startDate;
+        private String endDate;
+        private String equipmentId;
+        private String rss;
+        private int type;
+        private String status;
+
+        public String getMsgContext() {
+            return msgContext;
+        }
+
+        public void setMsgContext(String msgContext) {
+            this.msgContext = msgContext;
+        }
+
+        public boolean isNewRecord() {
+            return isNewRecord;
+        }
+
+        public void setNewRecord(boolean newRecord) {
+            isNewRecord = newRecord;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public boolean isIsNewRecord() {
+            return isNewRecord;
+        }
+
+        public void setIsNewRecord(boolean isNewRecord) {
+            this.isNewRecord = isNewRecord;
+        }
+
+        public String getCreateDate() {
+            return createDate;
+        }
+
+        public void setCreateDate(String createDate) {
+            this.createDate = createDate;
+        }
+
+        public String getUpdateDate() {
+            return updateDate;
+        }
+
+        public void setUpdateDate(String updateDate) {
+            this.updateDate = updateDate;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getLocation() {
+            return location;
+        }
+
+        public void setLocation(int location) {
+            this.location = location;
+        }
+
+        public int getFontSize() {
+            return fontSize;
+        }
+
+        public void setFontSize(int fontSize) {
+            this.fontSize = fontSize;
+        }
+
+        public String getMsgColor() {
+            return msgColor;
+        }
+
+        public void setMsgColor(String msgColor) {
+            this.msgColor = msgColor;
+        }
+
+        public String getBgColor() {
+            return bgColor;
+        }
+
+        public void setBgColor(String bgColor) {
+            this.bgColor = bgColor;
+        }
+
+        public String getStartDate() {
+            return startDate;
+        }
+
+        public void setStartDate(String startDate) {
+            this.startDate = startDate;
+        }
+
+        public String getEndDate() {
+            return endDate;
+        }
+
+        public void setEndDate(String endDate) {
+            this.endDate = endDate;
+        }
+
+        public String getEquipmentId() {
+            return equipmentId;
+        }
+
+        public void setEquipmentId(String equipmentId) {
+            this.equipmentId = equipmentId;
+        }
+
+        public String getRss() {
+            return rss;
+        }
+
+        public void setRss(String rss) {
+            this.rss = rss;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public void setType(int type) {
+            this.type = type;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+    }
+
     public static class ListResultBean implements Serializable {
         /**
          * showMenu : {"id":"6e9c683e0a054c80af4810ed03a97527","isNewRecord":false,"createDate":"2018-02-05 15:53:12","updateDate":"2018-02-05 15:53:12","showId":"275cac05943e42a284cbcc970b79a27f,7feecaa2e02747aead433f63c062d7d0,"}
          * listshow : [{"shows":{"id":"275cac05943e42a284cbcc970b79a27f","isNewRecord":false,"createDate":"2018-02-05 11:08:45","updateDate":"2018-02-05 14:51:10","name":"节目三安1","resolutionId":"6c17f3daa42a41e1838bc5b4186dac53","wide":500,"hige":300,"playTime":25,"resolution":{"isNewRecord":true,"screenType":1,"wide":1000,"high":600}},"listMaterial":[]},{"shows":{"id":"7feecaa2e02747aead433f63c062d7d0","isNewRecord":false,"createDate":"2018-02-05 14:12:03","updateDate":"2018-02-05 14:12:03","wide":500,"hige":300,"playTime":15},"listMaterial":[{"Material":{"id":"8b3af6141f9d42e18b2151524c073490","isNewRecord":false,"createDate":"2018-01-29 15:49:20","updateDate":"2018-01-29 17:26:14","type":2,"groupId":"173437fc93a249a58a0022b5452709c0","file":"http://127.0.0.1:8080/download/2018-01/material/79b354f4-6820-418d-a508-be1ab48cc145.mp3","name":"BMW","size":"24","groups":{"id":"173437fc93a249a58a0022b5452709c0","isNewRecord":false,"name":"建材"}}}]}]
          */
 
+        private long time;
         private ShowMenuBean showMenu;
         private List<ListshowBean> listshow;
+
+        public long getTime() {
+            return time;
+        }
+
+        public void setTime(long time) {
+            this.time = time;
+        }
 
         public ShowMenuBean getShowMenu() {
             return showMenu;

@@ -1,4 +1,4 @@
-package own.stromsong.myapplication.mvp.view;
+package own.stromsong.myapplication.mvp.view.receiver;
 
 import android.content.Context;
 import android.content.Intent;
@@ -58,7 +58,7 @@ public class MyReceiver extends XGPushBaseReceiver {
                         break;
                     case 1://播放内容
                         MenuBean menuBean = new Gson().fromJson(result, MenuBean.class);
-                        Video2Activity.startVideo2Activity(context,menuBean.getListResult());
+                        Video2Activity.startVideo2Activity(context,menuBean.getListResult(),null);
                         break;
                 }
             } catch (JSONException e) {

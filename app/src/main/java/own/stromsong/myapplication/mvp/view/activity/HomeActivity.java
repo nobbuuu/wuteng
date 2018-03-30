@@ -107,7 +107,7 @@ public class HomeActivity extends MvpActivity<HomePresenter> implements IHomeAct
     }
 
     @Override
-    public void getMenuList(List<MenuBean.ListResultBean> showMenu) {
-        Video2Activity.startVideo2Activity(this, showMenu);
+    public void getMenuList(List<MenuBean.ListResultBean> showMenu,List<MenuBean.SubtitlesBean> subtitles) {
+        Video2Activity.startVideo2Activity(this, showMenu,subtitles);
     }
 }

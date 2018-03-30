@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
 import android.net.Uri;
 import android.net.http.SslError;
-import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +18,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
@@ -33,11 +29,15 @@ import com.bumptech.glide.request.target.ViewTarget;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Handler;
+import java.util.Map;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import own.stromsong.myapplication.R;
 import own.stromsong.myapplication.mvp.base.BaseSupportActivity;
 import own.stromsong.myapplication.mvp.model.MenuBean;
@@ -48,18 +48,31 @@ public class Video2Activity extends BaseSupportActivity {
     String url = "http://120.24.234.123:8080/sysfile/upload/201711/64aa5b11-60df-4cae-8989-6ec194214eff.mp4";
     @BindView(R.id.root_rl)
     RelativeLayout mRootRl;
+    @BindView(R.id.top_tv)
+    TextView mTopTv;
+    @BindView(R.id.bottom_tv)
+    TextView mBottomTv;
 
     private List<MenuBean.ListResultBean> list;
+    private List<MenuBean.SubtitlesBean> subtitles;
     private MediaPlayer mediaPlayer;
+    private TimeReceiver timeReceiver;
 
     @Override
     protected int getLayoutId() {
         return R.layout.activity_video2;
     }
 
-    public static void startVideo2Activity(Context context, List<MenuBean.ListResultBean> list) {
+    /**
+     * 节目单 包括字幕
+     *
+     * @param context
+     * @param list
+     */
+    public static void startVideo2Activity(Context context, List<MenuBean.ListResultBean> list, List<MenuBean.SubtitlesBean> subtitles) {
         Intent intent = new Intent(context, Video2Activity.class);
         intent.putExtra("list", (Serializable) list);
+        intent.putExtra("zimu", (Serializable) subtitles);
         context.startActivity(intent);
     }
 
@@ -67,28 +80,71 @@ public class Video2Activity extends BaseSupportActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        mRootRl.removeAllViews();
-        showsList.clear();
         list = (List<MenuBean.ListResultBean>) intent.getSerializableExtra("list");//节目单集合
-        for (int i = 0; i < list.size(); i++) {
-            showsList.addAll(list.get(i).getListshow());//节目集合
+        subtitles = (List<MenuBean.SubtitlesBean>) getIntent().getSerializableExtra("zimu");
+        if (list != null) {
+            mRootRl.removeAllViews();
+            showsList.clear();
+            map.clear();
+            for (int i = 0; i < list.size(); i++) {
+                MenuBean.ListResultBean bean = list.get(i);
+                map.put(bean.getTime(), bean);
+            }
+            setData();
+            mRootRl.postInvalidate();
         }
-        setData();
-        mRootRl.postInvalidate();
+        if (subtitles != null) {
+            mTopTv.setText("");
+            mBottomTv.setText("");
+            setZimu();
+        }
     }
 
     private List<MenuBean.ListResultBean.ListshowBean> showsList = new ArrayList<>();//节目集合
 
+    private Map map = new HashMap<Long, MenuBean.ListResultBean>();
+
     @Override
+
     protected void initLocalData() {
         super.initLocalData();
         setBarVisible(false);
         list = (List<MenuBean.ListResultBean>) getIntent().getSerializableExtra("list");//节目单集合
-
-        for (int i = 0; i < list.size(); i++) {
-            showsList.addAll(list.get(i).getListshow());//节目集合
+        subtitles = (List<MenuBean.SubtitlesBean>) getIntent().getSerializableExtra("zimu");
+        if (list != null) {
+            map.clear();
+            for (int i = 0; i < list.size(); i++) {
+                MenuBean.ListResultBean bean = list.get(i);
+                map.put(bean.getTime(), bean);
+            }
+            setData();//开始播放节目
         }
-        setData();//开始播放节目
+        if (subtitles != null) {
+            setZimu();
+        }
+
+        timeReceiver = new TimeReceiver();
+        IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
+        registerReceiver(timeReceiver, filter);
+    }
+
+    private void setZimu() {
+        if (subtitles == null) {
+            return;
+        }
+        for (MenuBean.SubtitlesBean subtitle : subtitles) {
+            if (subtitle.getLocation() == 0 && subtitle.getStatus().equalsIgnoreCase("1")) {
+                mTopTv.setText(subtitle.getMsgContext());
+                mTopTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
+//                mTopTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
+                mTopTv.setTextSize(subtitle.getFontSize());
+            } else if (subtitle.getLocation() == 1 && subtitle.getStatus().equalsIgnoreCase("1")) {
+                mBottomTv.setText(subtitle.getMsgContext());
+                mBottomTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
+                mBottomTv.setTextSize(subtitle.getFontSize());
+//                mBottomTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
+            }
+        }
     }
 
     private void setData() {
@@ -106,7 +162,7 @@ public class Video2Activity extends BaseSupportActivity {
         }
     }
 
-    private android.os.Handler mHandler = new android.os.Handler() {
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -148,7 +204,7 @@ public class Video2Activity extends BaseSupportActivity {
                             mRootRl.addView(getImage(url, wide, hige, x, y));
                             break;
                         case 2:
-                            playSound(this, "http://www.realelaw.cn:8080/sysfile/upload/789.mp3", (float) 0.2);
+                            playSound(this, url, (float) 0.2);
                             break;
                         case 3:
                         case 4:
@@ -164,9 +220,6 @@ public class Video2Activity extends BaseSupportActivity {
                                     mRootRl.setBackground(resource);
                                 }
                             });
-                            break;
-                        case 11:
-                            mRootRl.addView(getText("#ff0000",40,"这是字幕这是字幕", 1400, 900));
                             break;
                     }
                 }
@@ -210,6 +263,7 @@ public class Video2Activity extends BaseSupportActivity {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
+        unregisterReceiver(timeReceiver);
     }
 
     private void stopPlaybackVideo() {
@@ -365,24 +419,16 @@ public class Video2Activity extends BaseSupportActivity {
         return imageView;
     }
 
-    /**
-     * 字幕
-     *
-     * @param text
-     * @param x
-     * @param y
-     * @return
-     */
-    private TextView getText(String color,float textSize,String text, int x, int y) {
-        TextView textView = new TextView(this);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.leftMargin = x;
-        layoutParams.topMargin = y;
-        textView.setLayoutParams(layoutParams);
-        textView.setText(text);
-        textView.setTextColor(Color.parseColor(color));
-        textView.setTextSize(textSize);
-        return textView;
-    }
+    public class TimeReceiver extends BroadcastReceiver {
 
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long millis = System.currentTimeMillis();
+            if (map.containsKey(millis)) {
+                showsList.clear();
+                showsList.add((MenuBean.ListResultBean.ListshowBean) map.get(millis));
+                setData();
+            }
+        }
+    }
 }

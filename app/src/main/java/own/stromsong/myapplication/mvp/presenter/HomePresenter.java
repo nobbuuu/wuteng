@@ -56,7 +56,7 @@ public class HomePresenter extends BasePresenter<IHomeAct> {
             @Override
             public void onResponseCodeSuccess(MenuBean menuBean) {
                 if (menuBean != null) {
-                    mvpView.getMenuList(menuBean.getListResult());
+                    mvpView.getMenuList(menuBean.getListResult(),menuBean.getSubtitles());
                 }
             }
         };

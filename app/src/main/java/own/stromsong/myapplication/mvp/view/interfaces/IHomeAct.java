@@ -12,5 +12,5 @@ import own.stromsong.myapplication.mvp.model.WeatherBean;
 
 public interface IHomeAct extends BaseView{
     void getWeather(WeatherBean.WeatherinfoBean weatherinfo);
-    void getMenuList(List<MenuBean.ListResultBean> showMenu);//节目单
+    void getMenuList(List<MenuBean.ListResultBean> showMenu,List<MenuBean.SubtitlesBean> subtitles);//节目单 字幕
 }
