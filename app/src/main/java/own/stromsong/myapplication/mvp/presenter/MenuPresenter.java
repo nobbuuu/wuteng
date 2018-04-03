@@ -5,8 +5,6 @@ import android.content.Context;
 
 import own.stromsong.myapplication.mvp.base.BaseObserver;
 import own.stromsong.myapplication.mvp.base.BasePresenter;
-import own.stromsong.myapplication.mvp.model.MenuActBean;
-import own.stromsong.myapplication.mvp.model.MenuActUrlBean;
 import own.stromsong.myapplication.mvp.model.MenuBean;
 import own.stromsong.myapplication.mvp.view.interfaces.IMenu;
 import own.stromsong.myapplication.utils.sharepreference.SharedPreferencesTag;

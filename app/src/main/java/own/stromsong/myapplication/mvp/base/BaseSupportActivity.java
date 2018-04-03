@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.BarUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.weavey.loading.lib.LoadingLayout;
@@ -24,7 +23,6 @@ import com.youth.xframe.widget.XLoadingDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import own.stromsong.myapplication.R;
 import own.stromsong.myapplication.app.MyApplication;

@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.http.SslError;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
@@ -29,15 +28,12 @@ import com.bumptech.glide.request.target.ViewTarget;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import own.stromsong.myapplication.R;
 import own.stromsong.myapplication.mvp.base.BaseSupportActivity;
 import own.stromsong.myapplication.mvp.model.MenuBean;

@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushManager;
-import com.weavey.loading.lib.LoadingLayout;
 
 import butterknife.BindView;
 import butterknife.OnClick;

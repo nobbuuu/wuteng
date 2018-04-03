@@ -15,7 +15,6 @@ import java.util.List;
 import butterknife.BindView;
 import own.stromsong.myapplication.R;
 import own.stromsong.myapplication.mvp.base.BaseSupportActivity;
-import own.stromsong.myapplication.mvp.model.MenuActUrlBean;
 import own.stromsong.myapplication.mvp.model.MenuBean;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 

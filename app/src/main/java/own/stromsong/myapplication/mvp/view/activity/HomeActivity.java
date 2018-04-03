@@ -1,18 +1,12 @@
 package own.stromsong.myapplication.mvp.view.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.blankj.utilcode.util.ActivityUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -22,7 +16,6 @@ import own.stromsong.myapplication.mvp.base.MvpActivity;
 import own.stromsong.myapplication.mvp.model.MenuBean;
 import own.stromsong.myapplication.mvp.model.WeatherBean;
 import own.stromsong.myapplication.mvp.presenter.HomePresenter;
-import own.stromsong.myapplication.mvp.presenter.LoginPresenter;
 import own.stromsong.myapplication.mvp.view.interfaces.IHomeAct;
 
 public class HomeActivity extends MvpActivity<HomePresenter> implements IHomeAct {

@@ -3,8 +3,6 @@ package own.stromsong.myapplication.mvp.view.interfaces;
 import java.util.List;
 
 import own.stromsong.myapplication.mvp.base.BaseView;
-import own.stromsong.myapplication.mvp.model.MenuActBean;
-import own.stromsong.myapplication.mvp.model.MenuActUrlBean;
 import own.stromsong.myapplication.mvp.model.MenuBean;
 
 /**

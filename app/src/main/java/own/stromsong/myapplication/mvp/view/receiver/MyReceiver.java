@@ -2,8 +2,6 @@ package own.stromsong.myapplication.mvp.view.receiver;
 
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
-import android.util.Log;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;

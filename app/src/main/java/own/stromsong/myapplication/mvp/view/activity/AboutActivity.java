@@ -2,14 +2,11 @@ package own.stromsong.myapplication.mvp.view.activity;
 
 
 import android.Manifest;
-import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
-import com.tencent.android.tpush.XGPushManager;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionNo;
 import com.yanzhenjie.permission.PermissionYes;
@@ -23,7 +20,6 @@ import own.stromsong.myapplication.mvp.presenter.LoginOutPresenter;
 import own.stromsong.myapplication.mvp.view.interfaces.ILogOutAndUpdata;
 import own.stromsong.myapplication.utils.cache.GlideCatchUtil;
 import own.stromsong.myapplication.utils.dialog.VersionDialog;
-import own.stromsong.myapplication.utils.sharepreference.SharedPreferencesTag;
 
 public class AboutActivity extends MvpActivity<LoginOutPresenter> implements ILogOutAndUpdata {
 

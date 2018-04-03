@@ -6,7 +6,6 @@ import android.content.Context;
 import own.stromsong.myapplication.mvp.base.BaseObserver;
 import own.stromsong.myapplication.mvp.base.BasePresenter;
 import own.stromsong.myapplication.mvp.model.LoginBean;
-import own.stromsong.myapplication.mvp.model.UserBean;
 import own.stromsong.myapplication.mvp.view.interfaces.ILoginAct;
 import own.stromsong.myapplication.utils.sharepreference.SharedPreferencesTag;
 
