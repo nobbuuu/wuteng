@@ -66,7 +66,7 @@ public class MainActivity extends MvpActivity<LoginPresenter> implements ILoginA
             }
         });
 
-        ActivityUtils.startActivity(HomeActivity.class);
+        ActivityUtils.startActivity(Video2Activity.class);
     }
 
     @Override

@@ -1,22 +1,20 @@
 package own.stromsong.myapplication.mvp.view.receiver;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import com.blankj.utilcode.util.ToastUtils;
-import com.google.gson.Gson;
 import com.tencent.android.tpush.XGPushBaseReceiver;
 import com.tencent.android.tpush.XGPushClickedResult;
 import com.tencent.android.tpush.XGPushRegisterResult;
 import com.tencent.android.tpush.XGPushShowedResult;
 import com.tencent.android.tpush.XGPushTextMessage;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import own.stromsong.myapplication.mvp.model.MenuBean;
-import own.stromsong.myapplication.mvp.view.activity.Video2Activity;
+import own.stromsong.myapplication.mvp.model.RefreshActList;
 
 public class MyReceiver extends XGPushBaseReceiver {
 
@@ -52,11 +50,10 @@ public class MyReceiver extends XGPushBaseReceiver {
             try {
                 JSONObject jsonObject = new JSONObject(customContent);
                 int type = jsonObject.getInt("type");
-                String result = jsonObject.getString("result");
+                String method = jsonObject.getString("method");
                 switch (type) {
                     case 1://播放内容
-                        MenuBean menuBean = new Gson().fromJson(result, MenuBean.class);
-                        Video2Activity.startVideo2Activity(context,menuBean.getListResult(),null);
+                        EventBus.getDefault().post(new RefreshActList());
                         break;
                 }
             } catch (JSONException e) {

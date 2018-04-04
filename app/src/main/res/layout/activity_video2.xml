@@ -27,4 +27,12 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/dp_20"/>
     </RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="等待获取资源中..."
+        android:textColor="@android:color/holo_red_dark"
+        android:layout_centerInParent="true"
+        android:textSize="@dimen/dp_20"
+        android:id="@+id/wait"
+        android:layout_height="wrap_content" />
 </RelativeLayout>
