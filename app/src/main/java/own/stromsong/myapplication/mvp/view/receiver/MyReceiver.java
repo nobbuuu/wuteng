@@ -2,6 +2,7 @@ package own.stromsong.myapplication.mvp.view.receiver;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;
@@ -45,6 +46,7 @@ public class MyReceiver extends XGPushBaseReceiver {
         String customContent = xgPushTextMessage.getCustomContent();
         String title = xgPushTextMessage.getTitle();
 
+        Log.e("aa","getTitle--->"+ title +"--getContent--->"+ content +"--getCustomContent--->"+ customContent);
         ToastUtils.showShort("getTitle--->"+ title +"--getContent--->"+ content +"--getCustomContent--->"+ customContent);
 
             try {
@@ -52,8 +54,6 @@ public class MyReceiver extends XGPushBaseReceiver {
                 int type = jsonObject.getInt("type");
                 String result = jsonObject.getString("result");
                 switch (type) {
-                    case -1://关机
-                        break;
                     case 1://播放内容
                         MenuBean menuBean = new Gson().fromJson(result, MenuBean.class);
                         Video2Activity.startVideo2Activity(context,menuBean.getListResult(),null);
@@ -72,16 +72,5 @@ public class MyReceiver extends XGPushBaseReceiver {
     @Override
     public void onNotifactionShowedResult(Context context, XGPushShowedResult xgPushShowedResult) {
 
-    }
-
-    /**
-     * 关机  行不通
-     * @param context
-     */
-    private void shutDown(Context context){
-        Intent intent = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
-        intent.putExtra("android.intent.extra.KEY_CONFIRM", false);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
     }
 }

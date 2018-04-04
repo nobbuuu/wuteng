@@ -203,16 +203,16 @@ public class MenuBean implements Serializable{
          * listshow : [{"shows":{"id":"275cac05943e42a284cbcc970b79a27f","isNewRecord":false,"createDate":"2018-02-05 11:08:45","updateDate":"2018-02-05 14:51:10","name":"节目三安1","resolutionId":"6c17f3daa42a41e1838bc5b4186dac53","wide":500,"hige":300,"playTime":25,"resolution":{"isNewRecord":true,"screenType":1,"wide":1000,"high":600}},"listMaterial":[]},{"shows":{"id":"7feecaa2e02747aead433f63c062d7d0","isNewRecord":false,"createDate":"2018-02-05 14:12:03","updateDate":"2018-02-05 14:12:03","wide":500,"hige":300,"playTime":15},"listMaterial":[{"Material":{"id":"8b3af6141f9d42e18b2151524c073490","isNewRecord":false,"createDate":"2018-01-29 15:49:20","updateDate":"2018-01-29 17:26:14","type":2,"groupId":"173437fc93a249a58a0022b5452709c0","file":"http://127.0.0.1:8080/download/2018-01/material/79b354f4-6820-418d-a508-be1ab48cc145.mp3","name":"BMW","size":"24","groups":{"id":"173437fc93a249a58a0022b5452709c0","isNewRecord":false,"name":"建材"}}}]}]
          */
 
-        private long time;
+        private long startTime;
         private ShowMenuBean showMenu;
         private List<ListshowBean> listshow;
 
         public long getTime() {
-            return time;
+            return startTime;
         }
 
         public void setTime(long time) {
-            this.time = time;
+            this.startTime = time;
         }
 
         public ShowMenuBean getShowMenu() {

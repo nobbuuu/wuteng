@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -32,11 +34,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import own.stromsong.myapplication.R;
 import own.stromsong.myapplication.mvp.base.BaseSupportActivity;
 import own.stromsong.myapplication.mvp.model.MenuBean;
+import own.stromsong.myapplication.mvp.model.MenuBean.ListResultBean;
+import own.stromsong.myapplication.mvp.model.MenuBean.ListResultBean.ListshowBean;
 
 public class Video2Activity extends BaseSupportActivity {
 
@@ -52,7 +58,7 @@ public class Video2Activity extends BaseSupportActivity {
     private List<MenuBean.ListResultBean> list;
     private List<MenuBean.SubtitlesBean> subtitles;
     private MediaPlayer mediaPlayer;
-    private TimeReceiver timeReceiver;
+    private Timer timer;
 
     @Override
     protected int getLayoutId() {
@@ -77,17 +83,13 @@ public class Video2Activity extends BaseSupportActivity {
         super.onNewIntent(intent);
 
         list = (List<MenuBean.ListResultBean>) intent.getSerializableExtra("list");//节目单集合
-        subtitles = (List<MenuBean.SubtitlesBean>) getIntent().getSerializableExtra("zimu");
+        subtitles = (List<MenuBean.SubtitlesBean>) getIntent().getSerializableExtra("zimu");//字幕
         if (list != null) {
-            mRootRl.removeAllViews();
-            showsList.clear();
             map.clear();
             for (int i = 0; i < list.size(); i++) {
                 MenuBean.ListResultBean bean = list.get(i);
                 map.put(bean.getTime(), bean);
             }
-            setData();
-            mRootRl.postInvalidate();
         }
         if (subtitles != null) {
             mTopTv.setText("");
@@ -96,55 +98,55 @@ public class Video2Activity extends BaseSupportActivity {
         }
     }
 
-    private List<MenuBean.ListResultBean.ListshowBean> showsList = new ArrayList<>();//节目集合
+    private List<ListshowBean> showsList = new ArrayList<>();//节目集合
 
-    private Map map = new HashMap<Long, MenuBean.ListResultBean>();
+    private Map map = new HashMap<Long, ListResultBean>();//节目单
 
     @Override
-
     protected void initLocalData() {
         super.initLocalData();
         setBarVisible(false);
         list = (List<MenuBean.ListResultBean>) getIntent().getSerializableExtra("list");//节目单集合
-        subtitles = (List<MenuBean.SubtitlesBean>) getIntent().getSerializableExtra("zimu");
+        subtitles = (List<MenuBean.SubtitlesBean>) getIntent().getSerializableExtra("zimu");//字幕
         if (list != null) {
             map.clear();
             for (int i = 0; i < list.size(); i++) {
                 MenuBean.ListResultBean bean = list.get(i);
                 map.put(bean.getTime(), bean);
             }
-            setData();//开始播放节目
         }
         if (subtitles != null) {
             setZimu();
         }
-
-        timeReceiver = new TimeReceiver();
-        IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
-        registerReceiver(timeReceiver, filter);
+        setTimer();//设置定时器
     }
 
-    private void setZimu() {
-        if (subtitles == null) {
-            return;
-        }
-        for (MenuBean.SubtitlesBean subtitle : subtitles) {
-            if (subtitle.getLocation() == 0 && subtitle.getStatus().equalsIgnoreCase("1")) {
-                mTopTv.setText(subtitle.getMsgContext());
-                mTopTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
-//                mTopTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
-                mTopTv.setTextSize(subtitle.getFontSize());
-            } else if (subtitle.getLocation() == 1 && subtitle.getStatus().equalsIgnoreCase("1")) {
-                mBottomTv.setText(subtitle.getMsgContext());
-                mBottomTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
-                mBottomTv.setTextSize(subtitle.getFontSize());
-//                mBottomTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
+    private void setTimer() {
+        timer = new Timer("定时器,立即启动，1秒执行一次");
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                long millis = System.currentTimeMillis();
+                if (map.containsKey(millis)) {
+                    showsList.clear();
+                    ListResultBean listResultBean = (ListResultBean) map.get(millis);//获取个节目单
+                    showsList.addAll(listResultBean.getListshow());//添加一个节目单的所有节目
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setData();//开始播放节目
+                        }
+                    });
+                }
             }
-        }
+        }, 0, 1000);
     }
 
+    /**
+     * 播放一个节目 handler 播放该节目所有素材
+     */
     private void setData() {
-        MenuBean.ListResultBean.ListshowBean bean = null;
+        ListshowBean bean = null;
         try {
             bean = showsList.get(0);//播放第一条,如果没节目会走异常
             playShow(bean.getListMaterial());
@@ -165,6 +167,25 @@ public class Video2Activity extends BaseSupportActivity {
             setData();
         }
     };
+
+    private void setZimu() {
+        if (subtitles == null) {
+            return;
+        }
+        for (MenuBean.SubtitlesBean subtitle : subtitles) {
+            if (subtitle.getLocation() == 0 && subtitle.getStatus().equalsIgnoreCase("1")) {
+                mTopTv.setText(subtitle.getMsgContext());
+                mTopTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
+//                mTopTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
+                mTopTv.setTextSize(subtitle.getFontSize());
+            } else if (subtitle.getLocation() == 1 && subtitle.getStatus().equalsIgnoreCase("1")) {
+                mBottomTv.setText(subtitle.getMsgContext());
+                mBottomTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
+                mBottomTv.setTextSize(subtitle.getFontSize());
+//                mBottomTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
+            }
+        }
+    }
 
     /**
      * 播放节目
@@ -259,7 +280,10 @@ public class Video2Activity extends BaseSupportActivity {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
-        unregisterReceiver(timeReceiver);
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
     }
 
     private void stopPlaybackVideo() {
@@ -413,18 +437,5 @@ public class Video2Activity extends BaseSupportActivity {
         imageView.setLayoutParams(layoutParams);
         Glide.with(this).load(url).error(R.mipmap.ic_launcher).into(imageView);
         return imageView;
-    }
-
-    public class TimeReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            long millis = System.currentTimeMillis();
-            if (map.containsKey(millis)) {
-                showsList.clear();
-                showsList.add((MenuBean.ListResultBean.ListshowBean) map.get(millis));
-                setData();
-            }
-        }
     }
 }
