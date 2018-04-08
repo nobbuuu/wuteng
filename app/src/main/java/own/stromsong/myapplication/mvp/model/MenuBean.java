@@ -508,6 +508,15 @@ public class MenuBean implements Serializable{
                     private String name;
                     private String size;
                     private GroupsBean groups;
+                    private String link;
+
+                    public String getLink() {
+                        return link;
+                    }
+
+                    public void setLink(String link) {
+                        this.link = link;
+                    }
 
                     public String getId() {
                         return id;

@@ -24,7 +24,7 @@ import retrofit2.http.Url;
 
 public interface ApiStores {
     //baseUrl
-    String API_SERVER_URL = "http://120.24.234.123:8080/sunnet_ad/app/";
+    String API_SERVER_URL = "http://120.24.234.123:8666/sunnet_ad/app/";
 
     @FormUrlEncoded
     @POST("login")

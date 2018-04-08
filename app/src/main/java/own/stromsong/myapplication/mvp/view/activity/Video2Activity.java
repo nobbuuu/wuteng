@@ -18,6 +18,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -43,10 +44,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import own.stromsong.myapplication.R;
 import own.stromsong.myapplication.mvp.base.MvpActivity;
-import own.stromsong.myapplication.mvp.model.MenuBean;
 import own.stromsong.myapplication.mvp.model.MenuBean.ListResultBean;
 import own.stromsong.myapplication.mvp.model.MenuBean.ListResultBean.ListshowBean;
 import own.stromsong.myapplication.mvp.model.MenuBean.ListResultBean.ListshowBean.Material;
@@ -56,6 +55,7 @@ import own.stromsong.myapplication.mvp.model.MenuBean.SubtitlesBean;
 import own.stromsong.myapplication.mvp.model.RefreshActList;
 import own.stromsong.myapplication.mvp.presenter.Video2Presenter;
 import own.stromsong.myapplication.mvp.view.interfaces.IVideo2Act;
+import own.stromsong.myapplication.weight.MyVideoView;
 
 public class Video2Activity extends MvpActivity<Video2Presenter> implements IVideo2Act {
 
@@ -73,6 +73,7 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
     private List<ListResultBean> list;
     private List<SubtitlesBean> subtitles;
     private MediaPlayer mediaPlayer;
+    private MyVideoView mVideoPlayer;
     private Timer timer;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(("yyyy:MM:dd:HH:mm:ss"));
     private Date mDate = new Date();
@@ -93,11 +94,12 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
         if (list != null) {
             map.clear();
             showsList.clear();
+            Log.e("aa", "节目单listSize--->" + list.size());
             for (int i = 0; i < list.size(); i++) {
                 ListResultBean bean = list.get(i);
                 mDate.setTime(bean.getTime());
                 String format = simpleDateFormat.format(mDate);
-                Log.e("aa", "format---" + format);
+                Log.e("aa", "startTime--->" + format);
                 map.put(format, bean);
             }
         }
@@ -136,7 +138,6 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mWait.setVisibility(View.GONE);
                             setData();//开始播放节目
                         }
                     });
@@ -151,8 +152,17 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
     private void setData() {
         ListshowBean bean = null;
         try {
-            mRootRl.removeAllViews();
             bean = showsList.get(0);//播放第一条,如果没节目会走异常
+            mWait.setVisibility(View.GONE);//有节目gone掉等待view
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer=null;
+            }
+            if (mVideoPlayer != null && mVideoPlayer.isPlaying()) {
+                mVideoPlayer.stopPlayback();
+            }
+            mRootRl.removeAllViews();
             playShow(bean.getListMaterial());
             mRootRl.postInvalidate();
         } catch (Exception e) {
@@ -209,6 +219,7 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
                     int x = Integer.valueOf(showsMaterialBean.getX());
                     int y = Integer.valueOf(showsMaterialBean.getY());
                     String url = materialBean.getFile();
+                    String link = materialBean.getLink();
                     int type = materialBean.getType();
                     switch (type) {
                         case 1:
@@ -222,7 +233,7 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
                             mRootRl.addView(getVideoPlayer(url, wide, hige, x, y));
                             break;
                         case 5:
-                            mRootRl.addView(getWebView(url, wide, hige, x, y));
+                            mRootRl.addView(getWebView(link, wide, hige, x, y));
                             break;
                         case 10:
                             Glide.with(this).load(url).into(new ViewTarget<RelativeLayout, GlideDrawable>(mRootRl) {
@@ -319,7 +330,7 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
      * @return
      */
     private VideoView getVideoPlayer(String url, int width, int height, int x, int y) {
-        final VideoView mVideoPlayer = new VideoView(this);
+        mVideoPlayer = new MyVideoView(this);
         LayoutParams layoutParams = new LayoutParams(width, height);
         layoutParams.leftMargin = x;
         layoutParams.topMargin = y;
@@ -436,14 +447,8 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
         layoutParams.leftMargin = x;
         layoutParams.topMargin = y;
         imageView.setLayoutParams(layoutParams);
+        imageView.setScaleType(ScaleType.FIT_XY);
         Glide.with(this).load(url).error(R.mipmap.ic_launcher).into(imageView);
         return imageView;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
     }
 }
