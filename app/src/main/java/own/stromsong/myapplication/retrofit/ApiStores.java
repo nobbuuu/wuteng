@@ -2,6 +2,8 @@ package own.stromsong.myapplication.retrofit;
 
 
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import own.stromsong.myapplication.mvp.base.HttpResponse;
 import own.stromsong.myapplication.mvp.model.LoginBean;
 import own.stromsong.myapplication.mvp.model.MenuActBean;
@@ -9,12 +11,15 @@ import own.stromsong.myapplication.mvp.model.MenuActUrlBean;
 import own.stromsong.myapplication.mvp.model.MenuBean;
 import own.stromsong.myapplication.mvp.model.Result;
 import own.stromsong.myapplication.mvp.model.UpdateAppBean;
+import own.stromsong.myapplication.mvp.model.UploadImgbean;
 import own.stromsong.myapplication.mvp.model.UserBean;
 import own.stromsong.myapplication.mvp.model.WeatherBean;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Url;
 
 /**
@@ -65,4 +70,13 @@ public interface ApiStores {
     //天气
     Observable<WeatherBean> getWeather(@Url String url);
 
+    //上传图片
+    @Multipart
+    @POST("files/save")
+    Observable<HttpResponse<UploadImgbean>> uploadImgMethod(@Part MultipartBody.Part mFile, @Part("type") RequestBody type,@Part("path") RequestBody path);
+
+    @FormUrlEncoded
+    @POST("updateEquipment")
+        //更新
+    Observable<HttpResponse> updateEquipment(@Field("id") String id, @Field("voice") int voice ,@Field("screenshots") String screenshots);
 }

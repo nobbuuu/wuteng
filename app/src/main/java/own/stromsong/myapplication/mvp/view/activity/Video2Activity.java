@@ -1,21 +1,27 @@
 package own.stromsong.myapplication.mvp.view.activity;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnInfoListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnHoverListener;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
@@ -39,6 +45,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +57,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -62,6 +72,8 @@ import own.stromsong.myapplication.mvp.model.MenuBean.ListResultBean.ListshowBea
 import own.stromsong.myapplication.mvp.model.MenuBean.ListResultBean.ListshowBean.Material.ShowsMaterialBean;
 import own.stromsong.myapplication.mvp.model.MenuBean.SubtitlesBean;
 import own.stromsong.myapplication.mvp.model.RefreshActList;
+import own.stromsong.myapplication.mvp.model.ScreenBitmap;
+import own.stromsong.myapplication.mvp.model.VoiceControl;
 import own.stromsong.myapplication.mvp.presenter.Video2Presenter;
 import own.stromsong.myapplication.mvp.view.interfaces.IVideo2Act;
 import own.stromsong.myapplication.weight.MyVideoView;
@@ -70,14 +82,12 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
 
     @BindView(R.id.root_rl)
     RelativeLayout mRootRl;
-    @BindView(R.id.top_tv)
-    TextView mTopTv;
-    @BindView(R.id.bottom_tv)
-    TextView mBottomTv;
     @BindView(R.id.zimu)
-    RelativeLayout mZimu;
+    RelativeLayout mZimuRl;
     @BindView(R.id.wait)
     TextView mWait;
+    @BindView(R.id.root_ll_parent)
+    RelativeLayout mRootLlParent;
 
     private List<ListResultBean> list;
     private List<SubtitlesBean> subtitles;
@@ -86,10 +96,12 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
     private Timer timer;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(("yyyy-MM-dd-HH:mm:ss"));
     private Date mDate = new Date();
-    private Set<SubtitlesBean> zimuSet = new HashSet<>();//字幕集合
     private List<ListshowBean> showsList = new ArrayList<>();//节目集合
     private Map map = new HashMap<String, ListResultBean>();//节目单
+    private Set<SubtitlesBean> zimuSet = new HashSet<>();//字幕集合
     private Map zimu = new HashMap<String, SubtitlesBean>();//字幕
+    private static final String path = Environment.getExternalStorageDirectory() + "/screen.png";
+    private boolean showLoading=true;//默认显示loading
 
     @Override
     protected int getLayoutId() {
@@ -108,6 +120,9 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
             Log.e("aa", "节目单listSize--->" + list.size());
             for (int i = 0; i < list.size(); i++) {
                 ListResultBean bean = list.get(i);
+                if (bean != null && bean.getListshow() != null) {
+                    Log.e("aa", "节目listSize--->" + bean.getListshow().size());
+                }
                 String time = bean.getStartTime() / 1000 + "," + bean.getEndTime() / 1000;
 
                 mDate.setTime(bean.getStartTime());
@@ -127,15 +142,15 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
             Log.e("aa", "字幕listSize--->" + subtitles.size());
             for (int i = 0; i < subtitles.size(); i++) {
                 SubtitlesBean bean = subtitles.get(i);
-                String time = bean.getStartTime() / 1000 + "," + bean.getEndTime() / 1000;
+                String time = bean.getStartDate() / 1000 + "," + bean.getEndDate() / 1000;
 
-                mDate.setTime(bean.getStartTime());
+                mDate.setTime(bean.getStartDate());
                 String StartTime = simpleDateFormat.format(mDate);
-                Log.e("aa", "StartTime--->" + StartTime);
+                Log.e("aa", "StartDate--->" + StartTime);
 
-                mDate.setTime(bean.getEndTime());
+                mDate.setTime(bean.getEndDate());
                 String EndTime = simpleDateFormat.format(mDate);
-                Log.e("aa", "EndTime--->" + EndTime);
+                Log.e("aa", "EndDate--->" + EndTime);
 
                 zimu.put(time, bean);
             }
@@ -145,8 +160,24 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshActList mRefreshActList) {
         Log.e("aa", "更新数据");
+        showLoading = true;
         mHandler.removeMessages(1);
         mvpPresenter.getList();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onScreenBitmap(ScreenBitmap mScreenBitmap) {
+        Log.e("aa", "开始截屏操作");
+        showLoading = false;
+        captureScreen(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onVoiceControl(VoiceControl mVoiceControl) {
+        showLoading = false;
+        if (TextUtils.isEmpty(mVoiceControl.getVolume())) return;
+        setVoice(Integer.valueOf(mVoiceControl.getVolume()));
+        Log.e("aa", "音量控制");
     }
 
     @Override
@@ -163,6 +194,8 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
         });
     }
 
+    private boolean updateZimu;
+
     private void setTimer() {
         timer = new Timer("定时器,立即启动，1秒执行一次");
         timer.schedule(new TimerTask() {
@@ -172,7 +205,7 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
                 //遍历map集合
                 Iterator it = map.entrySet().iterator();
                 while (it.hasNext()) {
-                    Map.Entry entry = (Map.Entry) it.next();
+                    Entry entry = (Entry) it.next();
                     String key = entry.getKey().toString();
                     ListResultBean listResultBean = (ListResultBean) entry.getValue();//一个节目单
                     String[] split = key.split(",");
@@ -193,21 +226,30 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
                 //遍历zimu集合
                 Iterator it1 = zimu.entrySet().iterator();
                 while (it1.hasNext()) {
-                    Map.Entry entry = (Map.Entry) it1.next();
+                    Entry entry = (Entry) it1.next();
                     String key = entry.getKey().toString();
                     SubtitlesBean mSubtitlesBean = (SubtitlesBean) entry.getValue();
                     String[] split = key.split(",");
                     if (millis >= Long.valueOf(split[0]) && millis <= Long.valueOf(split[1])) {
-                        zimuSet.add(mSubtitlesBean);//添加一个节目单的所有节目
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-//                                setZimu();//开始展示字幕
-                            }
-                        });
+                        if (!zimuSet.contains(mSubtitlesBean)) {
+                            zimuSet.add(mSubtitlesBean);//添加一个字幕
+                            updateZimu = true;
+                        }
                     } else {
-                        zimuSet.remove(mSubtitlesBean);
+                        if (zimuSet.contains(mSubtitlesBean)) {
+                            updateZimu = true;
+                            zimuSet.remove(mSubtitlesBean);//去掉一个字幕
+                        }
                     }
+                }
+                if (updateZimu) {
+                    updateZimu = !updateZimu;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setZimu();//开始展示字幕
+                        }
+                    });
                 }
             }
         }, 0, 1000);
@@ -253,22 +295,81 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
     };
 
     private void setZimu() {
-        if (zimuSet.size() == 0) {
-            return;
-        }
-        for (SubtitlesBean subtitle : subtitles) {
-            if (subtitle.getLocation() == 0 && subtitle.getStatus().equalsIgnoreCase("1")) {
-                mTopTv.setText(subtitle.getMsgContext());
-                mTopTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
-                mTopTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
-                mTopTv.setTextSize(Integer.valueOf(subtitle.getFontSize()));
-            } else if (subtitle.getLocation() == 1 && subtitle.getStatus().equalsIgnoreCase("1")) {
-                mBottomTv.setText(subtitle.getMsgContext());
-                mBottomTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
-                mBottomTv.setTextSize(Integer.valueOf(subtitle.getFontSize()));
-                mBottomTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
+        mZimuRl.removeAllViews();
+        if (zimuSet.size() != 0) {
+            for (SubtitlesBean subtitle : zimuSet) {
+                if (!subtitle.getStatus().equalsIgnoreCase("1")) return;
+                mZimuRl.addView(getZimuLayout(subtitle));
             }
         }
+        mZimuRl.postInvalidate();
+    }
+
+    /**
+     * 字幕的View
+     *
+     * @param subtitle
+     * @return
+     */
+    private View getZimuLayout(SubtitlesBean subtitle) {
+        View view = LayoutInflater.from(this).inflate(R.layout.zimulayout, null);
+        final TextView mTopTv = (TextView) view.findViewById(R.id.top_tv);
+        final TextView mBottomTv = (TextView) view.findViewById(R.id.bottom_tv);
+        final WebView mWebview = (WebView) view.findViewById(R.id.webview);
+        setWebViewSettings(mWebview, null);
+        switch (subtitle.getLocation()) {
+            case 0://top
+                mTopTv.setVisibility(View.VISIBLE);
+                switch (subtitle.getType()) {
+                    case 1://Rss
+                        mTopTv.setVisibility(View.GONE);
+                        mWebview.setVisibility(View.VISIBLE);
+                        mWebview.loadUrl(subtitle.getRss());
+                        break;
+                    case 2://图片
+                        String file = subtitle.getFile();
+                        Glide.with(this).load(file).into(new ViewTarget<TextView, GlideDrawable>(mTopTv) {
+                            @Override
+                            public void onResourceReady(GlideDrawable resource, GlideAnimation anim) {
+                                mTopTv.setBackground(resource);
+                            }
+                        });
+                        break;
+                    case 3://文字
+                        mTopTv.setText(subtitle.getMsgContext());
+                        mTopTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
+                        mTopTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
+                        mTopTv.setTextSize(Integer.valueOf(subtitle.getFontSize()));
+                        break;
+                }
+                break;
+            case 1://bottom
+                mBottomTv.setVisibility(View.VISIBLE);
+                switch (subtitle.getType()) {
+                    case 1://Rss
+                        mBottomTv.setVisibility(View.GONE);
+                        mWebview.setVisibility(View.VISIBLE);
+                        mWebview.loadUrl(subtitle.getRss());
+                        break;
+                    case 2://图片
+                        String file = subtitle.getFile();
+                        Glide.with(this).load(file).into(new ViewTarget<TextView, GlideDrawable>(mBottomTv) {
+                            @Override
+                            public void onResourceReady(GlideDrawable resource, GlideAnimation anim) {
+                                mBottomTv.setBackground(resource);
+                            }
+                        });
+                        break;
+                    case 3://文字
+                        mBottomTv.setText(subtitle.getMsgContext());
+                        mBottomTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
+                        mBottomTv.setTextSize(Integer.valueOf(subtitle.getFontSize()));
+                        mBottomTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
+                }
+                break;
+        }
+
+        return view;
     }
 
     /**
@@ -485,48 +586,7 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
         layoutParams.leftMargin = x;
         layoutParams.topMargin = y;
         inflate.setLayoutParams(layoutParams);
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                progressBar.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith("http:") || url.startsWith("https:")) {
-                    return false;
-                }
-                view.loadUrl(url);
-                return true;
-            }
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();    //表示等待证书响应
-                // handler.cancel();      //表示挂起连接，为默认方式
-                // handler.handleMessage(null);    //可做其他处理
-            }
-        });
-        //声明WebSettings子类
-        WebSettings webSettings = webView.getSettings();
-        //如果访问的页面中要与Javascript交互，则webview必须设置支持Javascript
-        webSettings.setJavaScriptEnabled(true);
-        //设置自适应屏幕，两者合用
-        webSettings.setUseWideViewPort(true); //将图片调整到适合webview的大小
-        webSettings.setLoadWithOverviewMode(true); // 缩放至屏幕的大小
-        //其他细节操作
-        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE); //关闭webview中缓存
-        webSettings.setAllowFileAccess(true); //设置可以访问文件
-        webSettings.setJavaScriptCanOpenWindowsAutomatically(true); //支持通过JS打开新窗口
-        webSettings.setLoadsImagesAutomatically(true); //支持自动加载图片
-        webSettings.setDefaultTextEncodingName("utf-8");//设置编码格式
+        setWebViewSettings(webView, progressBar);
         webView.loadUrl(url);
         return inflate;
     }
@@ -552,32 +612,133 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
         return imageView;
     }
 
+    private WebView setWebViewSettings(WebView mWebView, final ProgressBar progressBar) {
+        mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.startsWith("http:") || url.startsWith("https:")) {
+                    return false;
+                }
+                view.loadUrl(url);
+                return true;
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();    //表示等待证书响应
+                // handler.cancel();      //表示挂起连接，为默认方式
+                // handler.handleMessage(null);    //可做其他处理
+            }
+        });
+        //声明WebSettings子类
+        WebSettings webSettings = mWebView.getSettings();
+        //如果访问的页面中要与Javascript交互，则webview必须设置支持Javascript
+        webSettings.setJavaScriptEnabled(true);
+        //设置自适应屏幕，两者合用
+        webSettings.setUseWideViewPort(true); //将图片调整到适合webview的大小
+        webSettings.setLoadWithOverviewMode(true); // 缩放至屏幕的大小
+        //其他细节操作
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE); //关闭webview中缓存
+        webSettings.setAllowFileAccess(true); //设置可以访问文件
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true); //支持通过JS打开新窗口
+        webSettings.setLoadsImagesAutomatically(true); //支持自动加载图片
+        webSettings.setDefaultTextEncodingName("utf-8");//设置编码格式
+        return mWebView;
+    }
+
     @Override
     public void showLoading() {
+        if (!showLoading) return;
         showLoading1();
     }
 
     @Override
     public void showContent() {
+        if (!showLoading) return;
         super.showContent();
         goneLoading1();
     }
 
     @Override
     public void showEmpty() {
+        if (!showLoading) return;
         super.showEmpty();
         goneLoading1();
     }
 
     @Override
     public void showError() {
+        if (!showLoading) return;
         super.showError();
         goneLoading1();
     }
 
     @Override
     public void showNoNetwork() {
+        if (!showLoading) return;
         super.showNoNetwork();
         goneLoading1();
+    }
+
+    /**
+     * 获取整个窗口的截图
+     *
+     * @param context
+     * @return
+     */
+    @SuppressLint("NewApi")
+    private void captureScreen(Activity context) {
+        View cv = context.getWindow().getDecorView();
+
+        cv.setDrawingCacheEnabled(true);
+        cv.buildDrawingCache();
+        final Bitmap bmp = cv.getDrawingCache();
+        if (bmp == null) {
+            Log.e("aa", "截屏失败");
+            return;
+        }
+        bmp.setHasAlpha(false);
+        bmp.prepareToDraw();
+        mRootLlParent.post(new Runnable() {
+            @Override
+            public void run() {
+                FileOutputStream out = null;
+                try {
+                    out = new FileOutputStream(path);
+                    bmp.compress(CompressFormat.JPEG, 20, out);
+                    mRootLlParent.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mvpPresenter.commitPic(new File(path), getVoice());
+                        }
+                    }, 1000);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private int getVoice() {
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int volume = am.getStreamVolume(AudioManager.STREAM_MUSIC);//媒体音量
+        return volume;
+    }
+
+    private void setVoice(int index) {
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, index, AudioManager.FLAG_PLAY_SOUND);
     }
 }

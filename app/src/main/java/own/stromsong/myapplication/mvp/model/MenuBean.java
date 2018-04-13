@@ -53,29 +53,20 @@ public class MenuBean implements Serializable{
         private String msgColor;
         private String bgColor;
         private String msgContext;
-        private String startDate;
-        private String endDate;
+        private long startDate;
+        private long endDate;
         private String equipmentId;
         private String rss;
         private int type;
         private String status;
-        private long startTime;
-        private long endTime;
+        private String file;
 
-        public long getStartTime() {
-            return startTime;
+        public String getFile() {
+            return file;
         }
 
-        public void setStartTime(long startTime) {
-            this.startTime = startTime;
-        }
-
-        public long getEndTime() {
-            return endTime;
-        }
-
-        public void setEndTime(long endTime) {
-            this.endTime = endTime;
+        public void setFile(String file) {
+            this.file = file;
         }
 
         public String getMsgContext() {
@@ -166,19 +157,19 @@ public class MenuBean implements Serializable{
             this.bgColor = bgColor;
         }
 
-        public String getStartDate() {
+        public long getStartDate() {
             return startDate;
         }
 
-        public void setStartDate(String startDate) {
+        public void setStartDate(long startDate) {
             this.startDate = startDate;
         }
 
-        public String getEndDate() {
+        public long getEndDate() {
             return endDate;
         }
 
-        public void setEndDate(String endDate) {
+        public void setEndDate(long endDate) {
             this.endDate = endDate;
         }
 

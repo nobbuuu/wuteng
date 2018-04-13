@@ -34,6 +34,7 @@ public class LoginPresenter extends BasePresenter<ILoginAct> {
                     mHelper.putBooleanValue(SharedPreferencesTag.LOGIN_BOOLEAN, true);
                     mHelper.putStringValue(SharedPreferencesTag.TOKEN, mLoginBean.getToken());
                     mHelper.putStringValue(SharedPreferencesTag.ID,equId);
+                    mHelper.putStringValue(SharedPreferencesTag.ID1,mLoginBean.getId());
                 }
             }
         };

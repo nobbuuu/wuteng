@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_ll_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,27 +13,14 @@
         android:id="@+id/zimu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"></RelativeLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:id="@+id/top_tv"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_20" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bottom_tv"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="@dimen/dp_20"/>
-    </RelativeLayout>
     <TextView
-        android:layout_width="wrap_content"
-        android:text="等待获取资源中..."
-        android:textColor="@android:color/holo_red_dark"
-        android:layout_centerInParent="true"
-        android:textSize="@dimen/dp_20"
         android:id="@+id/wait"
-        android:layout_height="wrap_content" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="等待节目单资源获取中..."
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="@dimen/dp_20" />
 </RelativeLayout>

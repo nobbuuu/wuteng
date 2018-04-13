@@ -15,6 +15,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import own.stromsong.myapplication.mvp.model.RefreshActList;
+import own.stromsong.myapplication.mvp.model.ScreenBitmap;
+import own.stromsong.myapplication.mvp.model.VoiceControl;
 
 public class MyReceiver extends XGPushBaseReceiver {
 
@@ -44,20 +46,30 @@ public class MyReceiver extends XGPushBaseReceiver {
         String customContent = xgPushTextMessage.getCustomContent();
         String title = xgPushTextMessage.getTitle();
 
-        Log.e("aa","getTitle--->"+ title +"--getContent--->"+ content +"--getCustomContent--->"+ customContent);
+        Log.e("aa", "getTitle--->" + title + "--getContent--->" + content + "--getCustomContent--->" + customContent);
 
-            try {
-                JSONObject jsonObject = new JSONObject(customContent);
-                int type = jsonObject.getInt("type");
-                String method = jsonObject.getString("method");
-                switch (type) {
-                    case 1://播放内容
-                        EventBus.getDefault().post(new RefreshActList());
-                        break;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+        try {
+            JSONObject jsonObject = new JSONObject(customContent);
+            int type = jsonObject.getInt("type");
+//            String method = jsonObject.getString("method");
+            switch (type) {
+                case 1://播放内容
+                    EventBus.getDefault().post(new RefreshActList());
+                    break;
+                case 2://截屏
+                    EventBus.getDefault().post(new ScreenBitmap());
+                    break;
+                case 3://重启
+                    break;
+                case 4://音量控制
+                    String volume = jsonObject.getString("volume");
+                    EventBus.getDefault().post(new VoiceControl(volume));
+                    break;
             }
+        } catch (JSONException e) {
+            Log.e("aa", "推送JSON解析异常");
+            e.printStackTrace();
+        }
     }
 
     @Override
