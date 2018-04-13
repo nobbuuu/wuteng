@@ -49,7 +49,7 @@ public class MenuBean implements Serializable{
         private String updateDate;
         private String name;
         private int location;
-        private int fontSize;
+        private String fontSize;
         private String msgColor;
         private String bgColor;
         private String msgContext;
@@ -59,6 +59,24 @@ public class MenuBean implements Serializable{
         private String rss;
         private int type;
         private String status;
+        private long startTime;
+        private long endTime;
+
+        public long getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(long startTime) {
+            this.startTime = startTime;
+        }
+
+        public long getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(long endTime) {
+            this.endTime = endTime;
+        }
 
         public String getMsgContext() {
             return msgContext;
@@ -124,11 +142,11 @@ public class MenuBean implements Serializable{
             this.location = location;
         }
 
-        public int getFontSize() {
+        public String getFontSize() {
             return fontSize;
         }
 
-        public void setFontSize(int fontSize) {
+        public void setFontSize(String fontSize) {
             this.fontSize = fontSize;
         }
 
@@ -204,15 +222,24 @@ public class MenuBean implements Serializable{
          */
 
         private long startTime;
+        private long endTime;
         private ShowMenuBean showMenu;
         private List<ListshowBean> listshow;
 
-        public long getTime() {
+        public long getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(long endTime) {
+            this.endTime = endTime;
+        }
+
+        public long getStartTime() {
             return startTime;
         }
 
-        public void setTime(long time) {
-            this.startTime = time;
+        public void setStartTime(long startTime) {
+            this.startTime = startTime;
         }
 
         public ShowMenuBean getShowMenu() {

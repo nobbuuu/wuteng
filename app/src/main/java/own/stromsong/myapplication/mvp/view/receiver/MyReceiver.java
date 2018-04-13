@@ -45,7 +45,6 @@ public class MyReceiver extends XGPushBaseReceiver {
         String title = xgPushTextMessage.getTitle();
 
         Log.e("aa","getTitle--->"+ title +"--getContent--->"+ content +"--getCustomContent--->"+ customContent);
-        ToastUtils.showShort("getTitle--->"+ title +"--getContent--->"+ content +"--getCustomContent--->"+ customContent);
 
             try {
                 JSONObject jsonObject = new JSONObject(customContent);

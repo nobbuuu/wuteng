@@ -1,17 +1,21 @@
 package own.stromsong.myapplication.mvp.view.activity;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
+import android.media.MediaPlayer.OnInfoListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.net.http.SslError;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnHoverListener;
 import android.view.ViewGroup;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
@@ -19,6 +23,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -28,6 +33,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.ViewTarget;
+import com.weavey.loading.lib.LoadingLayout.OnReloadListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -38,8 +44,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -75,10 +84,12 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
     private MediaPlayer mediaPlayer;
     private MyVideoView mVideoPlayer;
     private Timer timer;
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(("yyyy:MM:dd:HH:mm:ss"));
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(("yyyy-MM-dd-HH:mm:ss"));
     private Date mDate = new Date();
+    private Set<SubtitlesBean> zimuSet = new HashSet<>();//字幕集合
     private List<ListshowBean> showsList = new ArrayList<>();//节目集合
     private Map map = new HashMap<String, ListResultBean>();//节目单
+    private Map zimu = new HashMap<String, SubtitlesBean>();//字幕
 
     @Override
     protected int getLayoutId() {
@@ -97,14 +108,37 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
             Log.e("aa", "节目单listSize--->" + list.size());
             for (int i = 0; i < list.size(); i++) {
                 ListResultBean bean = list.get(i);
-                mDate.setTime(bean.getTime());
-                String format = simpleDateFormat.format(mDate);
-                Log.e("aa", "startTime--->" + format);
-                map.put(format, bean);
+                String time = bean.getStartTime() / 1000 + "," + bean.getEndTime() / 1000;
+
+                mDate.setTime(bean.getStartTime());
+                String StartTime = simpleDateFormat.format(mDate);
+                Log.e("aa", "StartTime--->" + StartTime);
+
+                mDate.setTime(bean.getEndTime());
+                String EndTime = simpleDateFormat.format(mDate);
+                Log.e("aa", "EndTime--->" + EndTime);
+
+                map.put(time, bean);
             }
         }
         if (subtitles != null) {
-            setZimu();
+            zimu.clear();
+            zimuSet.clear();
+            Log.e("aa", "字幕listSize--->" + subtitles.size());
+            for (int i = 0; i < subtitles.size(); i++) {
+                SubtitlesBean bean = subtitles.get(i);
+                String time = bean.getStartTime() / 1000 + "," + bean.getEndTime() / 1000;
+
+                mDate.setTime(bean.getStartTime());
+                String StartTime = simpleDateFormat.format(mDate);
+                Log.e("aa", "StartTime--->" + StartTime);
+
+                mDate.setTime(bean.getEndTime());
+                String EndTime = simpleDateFormat.format(mDate);
+                Log.e("aa", "EndTime--->" + EndTime);
+
+                zimu.put(time, bean);
+            }
         }
     }
 
@@ -121,6 +155,12 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
         EventBus.getDefault().register(this);
         setTimer();//设置定时器
         mvpPresenter.getList();
+        getLoadLayout().setOnReloadListener(new OnReloadListener() {
+            @Override
+            public void onReload(View v) {
+                mvpPresenter.getList();
+            }
+        });
     }
 
     private void setTimer() {
@@ -128,19 +168,46 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                long millis = System.currentTimeMillis();
-                mDate.setTime(millis);
-                String format = simpleDateFormat.format(mDate);
-                if (map.containsKey(format)) {
-                    showsList.clear();
-                    ListResultBean listResultBean = (ListResultBean) map.get(format);//获取个节目单
-                    showsList.addAll(listResultBean.getListshow());//添加一个节目单的所有节目
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            setData();//开始播放节目
-                        }
-                    });
+                long millis = System.currentTimeMillis() / 1000;
+                //遍历map集合
+                Iterator it = map.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry entry = (Map.Entry) it.next();
+                    String key = entry.getKey().toString();
+                    ListResultBean listResultBean = (ListResultBean) entry.getValue();//一个节目单
+                    String[] split = key.split(",");
+                    if (millis >= Long.valueOf(split[0]) && millis <= Long.valueOf(split[1])) {
+                        showsList.clear();
+                        showsList.addAll(listResultBean.getListshow());//添加一个节目单的所有节目
+                        map.remove(key);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setData();//开始播放节目
+                                Log.e("aa", i++ + "----i");
+                            }
+                        });
+                        break;
+                    }
+                }
+                //遍历zimu集合
+                Iterator it1 = zimu.entrySet().iterator();
+                while (it1.hasNext()) {
+                    Map.Entry entry = (Map.Entry) it1.next();
+                    String key = entry.getKey().toString();
+                    SubtitlesBean mSubtitlesBean = (SubtitlesBean) entry.getValue();
+                    String[] split = key.split(",");
+                    if (millis >= Long.valueOf(split[0]) && millis <= Long.valueOf(split[1])) {
+                        zimuSet.add(mSubtitlesBean);//添加一个节目单的所有节目
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+//                                setZimu();//开始展示字幕
+                            }
+                        });
+                    } else {
+                        zimuSet.remove(mSubtitlesBean);
+                    }
                 }
             }
         }, 0, 1000);
@@ -149,6 +216,8 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
     /**
      * 播放一个节目 handler 播放该节目所有素材
      */
+    int i = 0;
+
     private void setData() {
         ListshowBean bean = null;
         try {
@@ -157,7 +226,7 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
                 mediaPlayer.release();
-                mediaPlayer=null;
+                mediaPlayer = null;
             }
             if (mVideoPlayer != null && mVideoPlayer.isPlaying()) {
                 mVideoPlayer.stopPlayback();
@@ -184,7 +253,7 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
     };
 
     private void setZimu() {
-        if (subtitles == null) {
+        if (zimuSet.size() == 0) {
             return;
         }
         for (SubtitlesBean subtitle : subtitles) {
@@ -192,11 +261,11 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
                 mTopTv.setText(subtitle.getMsgContext());
                 mTopTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
                 mTopTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
-                mTopTv.setTextSize(subtitle.getFontSize());
+                mTopTv.setTextSize(Integer.valueOf(subtitle.getFontSize()));
             } else if (subtitle.getLocation() == 1 && subtitle.getStatus().equalsIgnoreCase("1")) {
                 mBottomTv.setText(subtitle.getMsgContext());
                 mBottomTv.setTextColor(Color.parseColor(subtitle.getMsgColor()));
-                mBottomTv.setTextSize(subtitle.getFontSize());
+                mBottomTv.setTextSize(Integer.valueOf(subtitle.getFontSize()));
                 mBottomTv.setBackgroundColor(Color.parseColor(subtitle.getBgColor()));
             }
         }
@@ -329,19 +398,36 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
      * @param url
      * @return
      */
-    private VideoView getVideoPlayer(String url, int width, int height, int x, int y) {
+    private View getVideoPlayer(String url, int width, int height, int x, int y) {
+        View view = LayoutInflater.from(this).inflate(R.layout.videoview, null);
+        mVideoPlayer = (MyVideoView) view.findViewById(R.id.videoview);
+        final ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progress);
         mVideoPlayer = new MyVideoView(this);
         LayoutParams layoutParams = new LayoutParams(width, height);
         layoutParams.leftMargin = x;
         layoutParams.topMargin = y;
-        mVideoPlayer.setLayoutParams(layoutParams);
+        view.setLayoutParams(layoutParams);
         mVideoPlayer.setKeepScreenOn(true);
         mVideoPlayer.setVideoURI(Uri.parse(url));
+        mVideoPlayer.setOnInfoListener(new OnInfoListener() {
+            public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+                    progressBar.setVisibility(View.VISIBLE);
+                } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+                    //此接口每次回调完START就回调END,若不加上判断就会出现缓冲图标一闪一闪的卡顿现象
+                    if (mp.isPlaying()) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                }
+                return true;
+            }
+        });
         mVideoPlayer.setOnPreparedListener(new OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mp.setLooping(true);
                 mp.start();
+                progressBar.setVisibility(View.GONE);
             }
         });
         mVideoPlayer.setOnErrorListener(new OnErrorListener() {
@@ -351,7 +437,7 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
                 return true;
             }
         });
-        return mVideoPlayer;
+        return view;
     }
 
 
@@ -391,13 +477,27 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
      * @param y
      * @return
      */
-    private WebView getWebView(String url, int width, int height, int x, int y) {
-        WebView webView = new WebView(this);
+    private View getWebView(String url, int width, int height, int x, int y) {
+        View inflate = LayoutInflater.from(this).inflate(R.layout.webview, null);
+        WebView webView = (WebView) inflate.findViewById(R.id.webview);
+        final ProgressBar progressBar = (ProgressBar) inflate.findViewById(R.id.progress);
         LayoutParams layoutParams = new LayoutParams(width, height);
         layoutParams.leftMargin = x;
         layoutParams.topMargin = y;
-        webView.setLayoutParams(layoutParams);
+        inflate.setLayoutParams(layoutParams);
         webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                progressBar.setVisibility(View.GONE);
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.startsWith("http:") || url.startsWith("https:")) {
@@ -428,7 +528,7 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
         webSettings.setLoadsImagesAutomatically(true); //支持自动加载图片
         webSettings.setDefaultTextEncodingName("utf-8");//设置编码格式
         webView.loadUrl(url);
-        return webView;
+        return inflate;
     }
 
     /**
@@ -450,5 +550,34 @@ public class Video2Activity extends MvpActivity<Video2Presenter> implements IVid
         imageView.setScaleType(ScaleType.FIT_XY);
         Glide.with(this).load(url).error(R.mipmap.ic_launcher).into(imageView);
         return imageView;
+    }
+
+    @Override
+    public void showLoading() {
+        showLoading1();
+    }
+
+    @Override
+    public void showContent() {
+        super.showContent();
+        goneLoading1();
+    }
+
+    @Override
+    public void showEmpty() {
+        super.showEmpty();
+        goneLoading1();
+    }
+
+    @Override
+    public void showError() {
+        super.showError();
+        goneLoading1();
+    }
+
+    @Override
+    public void showNoNetwork() {
+        super.showNoNetwork();
+        goneLoading1();
     }
 }
