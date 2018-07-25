@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>轮播</title>
+
+    <link rel="stylesheet" href="css/shutter.css">
+    <style>
+        body{width:100%;heigth:auto;}
+		.shutter-btn,shutter-desc{display:none;}
+    </style>
+</head>
+<body>
+
+<div class="shutter shutter1" >
+    <div class="shutter-img">
+        <#list imgPaths as obj >
+            <a href="#" ><img src="${obj.material.file}" alt="#"></a>
+        </#list>
+    </div>
+    <ul class="shutter-btn">
+        <li class="next"></li>
+    </ul>
+    <div class="shutter-desc" style="display: none;">
+    </div>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/shutter.js"></script>
+<script src="js/velocity.js"></script>
+<script src="js/json.js"></script>
+<script>
+
+    $(function () {
+		  $('.shutter1').shutter({
+				shutterW: '1920', // 容器宽度
+				shutterH: '1028', // 容器高度
+				isAutoPlay: true, // 是否自动播放
+				playInterval: ${times}, // 自动播放时间
+				curDisplay: 0, // 当前显示页
+				fullPage: true, // 是否全屏展示
+				playType: ${showType} //播放效果
+			});
+    });
+
+</script>
+
+</body>
+</html>

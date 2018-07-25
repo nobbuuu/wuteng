@@ -12,9 +12,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import own.stromsong.myapplication.R;
+import own.stromsong.myapplication.app.MyApplication;
 
 /**
  * 通知栏工具类
@@ -100,4 +102,5 @@ public class NotifyUtil {
         String title = "下载进度";
         sendProgressNotify(context, manager, progress, title, NOTIFY_ID_APP, new Intent());
     }
+
 }

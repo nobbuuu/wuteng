@@ -4,6 +4,7 @@ import com.blankj.utilcode.util.LogUtils;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -26,6 +27,8 @@ public class RetrofitFactory {
     public static Retrofit retrofit() {
         if (mRetrofit == null) {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.connectTimeout(600, TimeUnit.SECONDS).readTimeout(60, TimeUnit.SECONDS).
+                    writeTimeout(60, TimeUnit.SECONDS);
 
             if (BuildConfig.DEBUG) {
                 // Log信息拦截器

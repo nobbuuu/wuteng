@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:padding="@dimen/dp_6">
+
+    <ImageView
+        android:id="@+id/weather_icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_8"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/wd_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30℃"
+            android:textColor="@color/color_333333"
+            android:textSize="@dimen/sp_12"/>
+
+        <TextView
+            android:id="@+id/wstatus_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="多云"
+            android:textColor="@color/color_333333"
+            android:textSize="@dimen/sp_12"/>
+
+        <TextView
+            android:id="@+id/wind_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="西南风2级"
+            android:textColor="@color/color_333333"
+            android:textSize="@dimen/sp_12"
+            android:visibility="gone"/>
+    </LinearLayout>
+</LinearLayout>

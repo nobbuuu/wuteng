@@ -12,6 +12,10 @@ public class MenuBean implements Serializable{
     private List<ListResultBean> listResult;
     private List<SubtitlesBean> subtitles;
 
+    public void setSubtitles(List<SubtitlesBean> subtitles) {
+        this.subtitles = subtitles;
+    }
+
     public List<ListResultBean> getListResult() {
         return listResult;
     }
@@ -216,6 +220,25 @@ public class MenuBean implements Serializable{
         private long endTime;
         private ShowMenuBean showMenu;
         private List<ListshowBean> listshow;
+        private String city;
+        private String sort;
+
+        public String getSort() {
+            return sort;
+        }
+
+        public void setSort(String sort) {
+            this.sort = sort;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        public void setCity(String city) {
+            this.city = city;
+        }
+
 
         public long getEndTime() {
             return endTime;
@@ -385,9 +408,74 @@ public class MenuBean implements Serializable{
                     private String y;
                     private int wide;
                     private int hige;
-                    private int showType;
+                    private int showType;// 播放形式  1.水平百叶窗 2.垂直百叶窗 3.顺时针回旋 4.向上推进 5.向下推进 6.向左推进 7.向右推进 -1没有
                     private int playTime;
                     private int sort;
+                    private String remarks;
+                    private MaterialBean material;
+
+                    public MaterialBean getMaterial() {
+                        return material;
+                    }
+
+                    public void setMaterial(MaterialBean material) {
+                        this.material = material;
+                    }
+
+                    public static class MaterialBean implements Serializable{
+
+                        /**
+                         * isNewRecord : true
+                         * file : http://120.24.234.123:8666/sunnet_ad/userfiles/2018-04/img/25d8bac3-99a2-411e-a74a-8ac11c2e16e2.jpg
+                         * name : 美女2
+                         * size : 363681
+                         */
+
+                        private boolean isNewRecord;
+                        private String file;
+                        private String name;
+                        private String size;
+
+                        public boolean isIsNewRecord() {
+                            return isNewRecord;
+                        }
+
+                        public void setIsNewRecord(boolean isNewRecord) {
+                            this.isNewRecord = isNewRecord;
+                        }
+
+                        public String getFile() {
+                            return file;
+                        }
+
+                        public void setFile(String file) {
+                            this.file = file;
+                        }
+
+                        public String getName() {
+                            return name;
+                        }
+
+                        public void setName(String name) {
+                            this.name = name;
+                        }
+
+                        public String getSize() {
+                            return size;
+                        }
+
+                        public void setSize(String size) {
+                            this.size = size;
+                        }
+                    }
+
+                    public String getRemarks() {
+                        return remarks;
+                    }
+
+                    public void setRemarks(String remarks) {
+                        this.remarks = remarks;
+                    }
 
                     public String getId() {
                         return id;
@@ -527,6 +615,15 @@ public class MenuBean implements Serializable{
                     private String size;
                     private GroupsBean groups;
                     private String link;
+                    private String agentId;
+
+                    public String getAgentId() {
+                        return agentId;
+                    }
+
+                    public void setAgentId(String agentId) {
+                        this.agentId = agentId;
+                    }
 
                     public String getLink() {
                         return link;
@@ -673,11 +770,38 @@ public class MenuBean implements Serializable{
                 private String createDate;
                 private String updateDate;
                 private String name;
+                private String type;
+                private String agentId;
+                private String showModelId;
                 private String resolutionId;
                 private int wide;
                 private int hige;
-                private int playTime;
+                private long playTime;
                 private ResolutionBean resolution;
+
+                public String getType() {
+                    return type;
+                }
+
+                public void setType(String type) {
+                    this.type = type;
+                }
+
+                public String getAgentId() {
+                    return agentId;
+                }
+
+                public void setAgentId(String agentId) {
+                    this.agentId = agentId;
+                }
+
+                public String getShowModelId() {
+                    return showModelId;
+                }
+
+                public void setShowModelId(String showModelId) {
+                    this.showModelId = showModelId;
+                }
 
                 public String getId() {
                     return id;
@@ -743,11 +867,11 @@ public class MenuBean implements Serializable{
                     this.hige = hige;
                 }
 
-                public int getPlayTime() {
+                public long getPlayTime() {
                     return playTime;
                 }
 
-                public void setPlayTime(int playTime) {
+                public void setPlayTime(long playTime) {
                     this.playTime = playTime;
                 }
 

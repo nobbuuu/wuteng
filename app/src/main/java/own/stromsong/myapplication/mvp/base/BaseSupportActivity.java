@@ -1,5 +1,6 @@
 package own.stromsong.myapplication.mvp.base;
 
+import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -36,7 +37,7 @@ import own.stromsong.myapplication.utils.sharepreference.SharedPreferencesHelper
  * Created by Administrator on 2017/10/31 0031.
  */
 
-public abstract class BaseSupportActivity extends AppCompatActivity {
+public abstract class BaseSupportActivity extends Activity {
     protected SharedPreferencesHelper mHelper;
     protected XLoadingDialog mLoading;
     @BindView(R.id.title)
@@ -64,12 +65,6 @@ public abstract class BaseSupportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mHelper = SharedPreferencesHelper.getInstance(MyApplication.getInstance());
         View baseView = LayoutInflater.from(this).inflate(R.layout.base_activity, null);
-        baseView.findViewById(R.id.leftText).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();//返回键
-            }
-        });
         mRootLl = baseView.findViewById(R.id.root_ll);
         if (getLayoutId() > 0) {
             mRootLl.removeAllViews();

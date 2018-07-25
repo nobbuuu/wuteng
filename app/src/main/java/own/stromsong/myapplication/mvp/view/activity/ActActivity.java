@@ -77,7 +77,7 @@ public class ActActivity extends MvpActivity<MenuPresenter> implements IMenu {
                 if (mList.size() == 0) {
                     showToastMsgShort("暂无素材,播放默认素材");
                 }
-                VideoActivity.startVideoActivity(ActActivity.this,mList);
+//                VideoActivity.startVideoActivity(ActActivity.this,mList);
             }
         });
     }
@@ -108,6 +108,7 @@ public class ActActivity extends MvpActivity<MenuPresenter> implements IMenu {
             if (showMenu==null) return;
             helper.setText(R.id.name, "节目单1");
             helper.setText(R.id.value, "3'30''00");
+
         }
     }
 }

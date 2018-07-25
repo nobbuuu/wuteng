@@ -2,6 +2,7 @@ package own.stromsong.myapplication.mvp.presenter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -34,7 +35,7 @@ public class HomePresenter extends BasePresenter<IHomeAct> {
 
             @Override
             public void onNext(Object o) {
-                mvpView.getWeather(((WeatherBean) o).getWeatherinfo());
+//                mvpView.getWeather(((WeatherBean) o).getWeatherinfo());
             }
 
             @Override
@@ -60,6 +61,7 @@ public class HomePresenter extends BasePresenter<IHomeAct> {
                 }
             }
         };
-        addObserver(mApiStores.showMenu(mHelper.getStringValue(SharedPreferencesTag.TOKEN)),observer);
+        String token = mHelper.getStringValue(SharedPreferencesTag.TOKEN);
+        addObserver(mApiStores.showMenu(token,String.valueOf(System.currentTimeMillis())),observer);
     }
 }

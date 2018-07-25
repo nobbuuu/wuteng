@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+#多线程下载框架；compile 'cn.woblog.android:downloader:1.0.1'
+-keep public class * implements cn.woblog.android.downloader.db.DownloadDBController
+-keep class cn.woblog.android.downloader.domain.** { *; }

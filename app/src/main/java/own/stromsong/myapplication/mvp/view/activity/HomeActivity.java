@@ -1,5 +1,6 @@
 package own.stromsong.myapplication.mvp.view.activity;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,6 +18,7 @@ import own.stromsong.myapplication.mvp.model.MenuBean;
 import own.stromsong.myapplication.mvp.model.WeatherBean;
 import own.stromsong.myapplication.mvp.presenter.HomePresenter;
 import own.stromsong.myapplication.mvp.view.interfaces.IHomeAct;
+import own.stromsong.myapplication.utils.sharepreference.SharedPreferencesTag;
 
 public class HomeActivity extends MvpActivity<HomePresenter> implements IHomeAct {
 
@@ -44,6 +46,8 @@ public class HomeActivity extends MvpActivity<HomePresenter> implements IHomeAct
     protected void onResume() {
         super.onResume();
         mvpPresenter.getWeather();
+        String token = mHelper.getStringValue(SharedPreferencesTag.TOKEN);
+        Log.e("tag","token="+token);
     }
 
     @Override
@@ -91,12 +95,6 @@ public class HomeActivity extends MvpActivity<HomePresenter> implements IHomeAct
                 ActivityUtils.startActivity(AboutActivity.class);
                 break;
         }
-    }
-
-    @Override
-    public void getWeather(WeatherBean.WeatherinfoBean weatherinfo) {
-//        mWeather1.setText(weatherinfo.getTemp1());
-//        mWeather2.setText(weatherinfo.getWeather());
     }
 
     @Override

@@ -2,6 +2,7 @@ package own.stromsong.myapplication.mvp.presenter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import own.stromsong.myapplication.mvp.base.BaseObserver;
 import own.stromsong.myapplication.mvp.base.BasePresenter;
@@ -30,11 +31,12 @@ public class LoginPresenter extends BasePresenter<ILoginAct> {
             @Override
             public void onResponseCodeSuccess(LoginBean mLoginBean) {
                 if (mLoginBean != null) {
-                    mvpView.isSuccess();
                     mHelper.putBooleanValue(SharedPreferencesTag.LOGIN_BOOLEAN, true);
                     mHelper.putStringValue(SharedPreferencesTag.TOKEN, mLoginBean.getToken());
+                    Log.e("tag","token="+mLoginBean.getToken());
                     mHelper.putStringValue(SharedPreferencesTag.ID,equId);
                     mHelper.putStringValue(SharedPreferencesTag.ID1,mLoginBean.getId());
+                    mvpView.isSuccess();
                 }
             }
         };

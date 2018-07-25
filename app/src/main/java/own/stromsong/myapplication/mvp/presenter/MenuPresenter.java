@@ -33,6 +33,6 @@ public class MenuPresenter extends BasePresenter<IMenu>{
                 }
             }
         };
-        addObserver(mApiStores.showMenu(mHelper.getStringValue(SharedPreferencesTag.TOKEN)),observer);
+        addObserver(mApiStores.showMenu(mHelper.getStringValue(SharedPreferencesTag.TOKEN),String.valueOf(System.currentTimeMillis())),observer);
     }
 }

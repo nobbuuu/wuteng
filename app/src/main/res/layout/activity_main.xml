@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@mipmap/bg"
-    android:gravity="center"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@mipmap/bg"
+              android:gravity="center"
+              android:orientation="vertical">
+
     <View
         android:layout_width="0dp"
+        android:layout_height="0dp"
         android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:layout_height="0dp"/>
+        android:focusableInTouchMode="true"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,47 +23,47 @@
             android:layout_height="wrap_content"
             android:text="输入设备ID"
             android:textColor="@color/color_ffffff"
-            android:textSize="26px" />
+            android:textSize="26px"/>
 
         <EditText
             android:id="@+id/et_id"
             android:layout_width="645px"
-            android:layout_height="80px"
+            android:layout_height="90px"
             android:layout_marginTop="14px"
-            android:background="@drawable/rectangle_2r"
-            android:hint="ID"
-            android:text="N6714583"
-            android:singleLine="true"
+            android:background="@drawable/edittext_debg"
             android:ellipsize="end"
+            android:gravity="center"
             android:paddingLeft="5dp"
-            android:textColor="@color/color_000000"
-            android:textSize="33px" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="52px">
-
-        <EditText
-            android:id="@+id/et_pw"
-            android:layout_width="645px"
-            android:layout_height="80px"
-            android:background="@drawable/rectangle_2r"
-            android:gravity="center_vertical"
-            android:hint="输入密码"
-            android:text="123456"
             android:singleLine="true"
-            android:ellipsize="end"
-            android:paddingLeft="5dp"
             android:textColor="@color/color_000000"
-            android:textSize="32px" />
+            android:textSize="33px"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="52px"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/et_pw"
+            android:layout_width="645px"
+            android:layout_height="80px"
+            android:background="@drawable/rectangle_2r"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:hint="输入密码"
+            android:paddingLeft="5dp"
+            android:singleLine="true"
+            android:text="123456"
+            android:textColor="@color/color_000000"
+            android:textSize="32px"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32px"
         android:gravity="center">
 
         <TextView
@@ -72,7 +74,7 @@
             android:gravity="center"
             android:text="登录"
             android:textColor="@color/color_ffffff"
-            android:textSize="32px" />
+            android:textSize="32px"/>
     </LinearLayout>
 
-</LinearLayout>  
+</LinearLayout>

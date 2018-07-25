@@ -32,7 +32,7 @@ public class LoginOutPresenter extends BasePresenter<ILogOutAndUpdata> {
                 if (mResult != null && "退出登录".equalsIgnoreCase(mResult.getResult())) {
                     mvpView.isSuccess();
                     mHelper.putBooleanValue(SharedPreferencesTag.LOGIN_BOOLEAN, false);
-                    XGPushManager.delAccount(context,mHelper.getStringValue(SharedPreferencesTag.ID));
+                    XGPushManager.unregisterPush(context);
                 } else {
                     mvpView.fail();
                 }

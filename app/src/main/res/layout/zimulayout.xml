@@ -1,26 +1,23 @@
 <RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <TextView
-        android:layout_width="match_parent"
+    >
+    <own.stromsong.myapplication.weight.MarqueeView
         android:id="@+id/top_tv"
-        android:visibility="gone"
-        android:gravity="center"
-        android:layout_height="45px" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
     <WebView
-        android:layout_width="match_parent"
         android:id="@+id/webview"
-        android:visibility="gone"
-        android:gravity="center"
-        android:layout_height="45px" />
-
-    <TextView
         android:layout_width="match_parent"
-        android:layout_height="45px"
-        android:id="@+id/bottom_tv"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:visibility="gone"
-        android:layout_alignParentBottom="true"/>
+        android:visibility="gone"/>
+
+    <own.stromsong.myapplication.weight.MarqueeView
+        android:id="@+id/bottom_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 </RelativeLayout>

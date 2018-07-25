@@ -2,8 +2,11 @@ package own.stromsong.myapplication.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
+import android.os.StrictMode;
 
+import com.awen.photo.FrescoImageLoader;
 import com.blankj.utilcode.util.Utils;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreater;
@@ -25,7 +28,6 @@ import own.stromsong.myapplication.R;
 
 public class MyApplication extends Application {
     private static MyApplication mApplication;
-
     public static MyApplication getInstance() {
         return mApplication;
     }
@@ -65,7 +67,16 @@ public class MyApplication extends Application {
                 .setShowThreadInfo(false)//是否开启线程信息显示，默认true
                 .setDebug(true);//是否显示日志，默认true，发布时最好关闭
         XGPushConfig.enableDebug(this,true);
+
+        FrescoImageLoader.init(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+        }
+
     }
+
+
     /**
      * 初始化状态布局
      */

@@ -57,14 +57,14 @@ public abstract class BaseObserver<T> implements Observer<HttpResponse<T>> {
 
     @Override
     public void onError(Throwable e) {
-        LogUtils.d("ad_", "error:" + e.toString());
+        LogUtils.e("ad_", "error:" + e.toString());
 
         mBaseView.showError();
-        if (e.getMessage() == null) {
-            ToastUtils.showShort(e + "");
+        if (e.getMessage() != null&&!e.getMessage().contains("failed to connect")) {
+            ToastUtils.showShort("网络无连接");
             return;
         }
-        ToastUtils.showShort(e.getMessage() + "");
+
     }
 
     @Override
@@ -88,8 +88,9 @@ public abstract class BaseObserver<T> implements Observer<HttpResponse<T>> {
         mBaseView.showError();
         switch (code) {
             case "0001"://token失效
-                ActivityUtils.finishToActivity(MainActivity.class, false);
+//                ActivityUtils.finishToActivity(MainActivity.class, false);
                 helper.putBooleanValue(SharedPreferencesTag.LOGIN_BOOLEAN, false);
+
                 break;
         }
     }

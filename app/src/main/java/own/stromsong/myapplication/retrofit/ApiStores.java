@@ -1,6 +1,9 @@
 package own.stromsong.myapplication.retrofit;
 
 
+import java.util.List;
+import java.util.Map;
+
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -14,7 +17,9 @@ import own.stromsong.myapplication.mvp.model.UpdateAppBean;
 import own.stromsong.myapplication.mvp.model.UploadImgbean;
 import own.stromsong.myapplication.mvp.model.UserBean;
 import own.stromsong.myapplication.mvp.model.WeatherBean;
+import own.stromsong.myapplication.mvp.model.WeatherValueBean;
 import retrofit2.http.Field;
+import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
@@ -30,7 +35,7 @@ import retrofit2.http.Url;
 public interface ApiStores {
     //baseUrl
     String API_SERVER_URL = "http://120.24.234.123:8666/sunnet_ad/app/";
-
+    String CITYCODE_SERVICE_URL = "http://sugg.us.search.yahoo.net/gossip-gl-location/?appid=weather&output=xml&command=";
     @FormUrlEncoded
     @POST("login")
 //设备登录
@@ -44,7 +49,7 @@ public interface ApiStores {
     @FormUrlEncoded
     @POST("showMenu")
 //根据当前设备获取所有节目单
-    Observable<HttpResponse<MenuBean>> showMenu(@Field("token") String token);
+    Observable<HttpResponse<MenuBean>> showMenu(@Field("token") String token,@Field("data") String data);
 
     @FormUrlEncoded
     @POST("show")
@@ -66,9 +71,14 @@ public interface ApiStores {
     //更新
     Observable<HttpResponse<UpdateAppBean>> appApk(@Field("token") String token, @Field("version") String version);
 
-    @GET
     //天气
-    Observable<WeatherBean> getWeather(@Url String url);
+    @FormUrlEncoded
+    @POST("weatherApi")
+    Observable<HttpResponse<WeatherValueBean>> getWeather(@Field("city") String cityName);
+
+    @GET
+    //获取城市代码
+    Observable<String> getCityCode(@Url String url);
 
     //上传图片
     @Multipart
@@ -79,4 +89,25 @@ public interface ApiStores {
     @POST("updateEquipment")
         //更新
     Observable<HttpResponse> updateEquipment(@Field("id") String id, @Field("voice") int voice ,@Field("screenshots") String screenshots);
+
+    @FormUrlEncoded
+    @POST("updateEquipment")
+        //更新
+    Observable<HttpResponse> updateEquipment(@Field("id") String id, @FieldMap Map<String,String> map);
+
+    //获取最新字幕
+    @FormUrlEncoded
+    @POST("getSubtitlesList")
+    Observable<HttpResponse<List<MenuBean.SubtitlesBean>>> getSubtitlesList(@Field("token") String token);
+
+    //图片轮播
+    @FormUrlEncoded
+    @POST("getShowHtml")
+    Observable<String> getShowHtml(@Field("imgPaths") String imgPaths,@Field("type") String type,@Field("times") String times);
+
+    //获取单个节目单信息
+    @FormUrlEncoded
+    @POST("show")
+    Observable<HttpResponse<MenuBean.ListResultBean>> getimingShowMenu(@Field("token") String token, @Field("showMenuId") String showMenuId);
+
 }
